@@ -83,13 +83,13 @@ module.exports = async function handler(req, res) {
   try {
     await Promise.all([
       resend.emails.send({
-        from: 'Hey Connie <setup@heyconnie.co>',
+        from: 'Hey Connie <heyconniesetup@bluhatfunding.com>',
         to: owner_email.trim(),
         subject: "You're in! Here's how to set up your AI receptionist",
         html: welcomeEmail({ business_name: business_name.trim(), owner_name: owner_name.trim(), setup_phone: SETUP_PHONE }),
       }),
       resend.emails.send({
-        from: 'Hey Connie <setup@heyconnie.co>',
+        from: 'Hey Connie <heyconniesetup@bluhatfunding.com>',
         to: process.env.NOTIFICATION_EMAIL,
         subject: `New detailer signup: ${business_name.trim()}`,
         html: alertEmail({ business_name, owner_name, owner_phone, owner_email, business_id }),
