@@ -1,7 +1,61 @@
-# Luis Mobile Detail — Session Progress Log
+# Hey Connie — Session Progress Log
 
 _Newest entry on top. Follow Andrew's THREE FILE RULE: this file = session log only._
 _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
+
+---
+
+## Session 77 — 2026-06-28
+
+### CURRENT PHASE: Phase 4 — Consolidation into heyconnie ✅
+### LAST COMPLETED: Full migration
+### NEXT: Phase 5 — Manually onboard second detailer
+
+---
+
+### What Was Done
+
+**Phase 4 complete.** heyconnie is now the single codebase and deployment for the platform.
+
+**Copied from Luis Mobile Detail → heyconnie:**
+- `api/` — all serverless endpoints (book, chat, slots, lookup-customer, loyalty-utils, etc.)
+- `api/admin/` — all 17 admin endpoints
+- `api/cron/` — all 13 cron jobs
+- `api/voice/` — all 17 voice tool endpoints
+- `api/utils/resolve-business.js` — multi-tenant routing helper
+- `admin/` — admin panel (index.html, manifest, sw, icon)
+- `config/` — vapi-assistant.js, setup-agent.js, basic-agent.js
+- `scripts/` — vapi-setup.js, setup-agent-deploy.js + utilities
+- `supabase/migrations/` — all migration SQL files
+- `cancel.html`
+- All MD docs: DB_SCHEMA.md, master-build-playbook-v2.md, onboarding-spec.md, learning-loop-spec.md, PRD/PRD_v1.md
+- All Roadmap specs (merged with existing website-builder-feature-spec.md)
+
+**Updated in heyconnie:**
+- `vercel.json` — added all 13 cron jobs + `/cancel` route
+- `package.json` — merged all dependencies (@anthropic-ai/sdk, twilio, dotenv, etc.)
+- `CLAUDE.md` — new platform-level CLAUDE.md (heyconnie is the platform, Luis is tenant #1)
+- Twilio SID redacted from docs (GitHub push protection)
+
+**Committed and pushed** to `https://github.com/bluhatbookkeeping/heyconnie.git` — Vercel auto-deploy triggered.
+
+### What's NOT Done (Andrew must do manually)
+
+1. **Verify env vars in heyconnie Vercel project** — all vars from Luis project must be present:
+   `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `RESEND_API_KEY`, `NOTIFICATION_EMAIL`,
+   `ADMIN_SECRET`, `VAPI_API_KEY`, `VAPI_ASSISTANT_ID`, `VAPI_PHONE_NUMBER_ID`,
+   `GOOGLE_MAPS_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
+
+2. **Confirm heyconnie Vercel deployment is healthy** — check deployment logs in Vercel dashboard
+
+3. **Update Vapi webhook URLs** — point Connie's tool endpoints from luis-mobile-detailing.vercel.app → heyconnie.co (in Vapi dashboard → assistant → tools)
+
+4. **Redirect luis-mobile-detailing.vercel.app → heyconnie.co** — add to Luis project vercel.json. Hold until Andrew confirms the customer site won't break. Note: Luis's customer-facing site (index.html with hero/gallery/booking form) stays in the Luis repo.
+
+5. **Delete Luis Vercel project** — only after steps 1–4 confirmed. Manual step in Vercel dashboard.
+
+### Issues Hit
+- GitHub push protection blocked initial push (Twilio Account SID in CLAUDE.md + archive docs). Redacted to `[see Twilio dashboard]` and squashed into a single clean commit.
 
 ---
 
