@@ -1,5 +1,6 @@
 const { createClient } = require('@supabase/supabase-js')
 const { Resend } = require('resend')
+const { buildBasicAgentConfig } = require('../config/basic-agent')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -8,6 +9,25 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const SETUP_PHONE = '(818) 403-3447'
+const BASE_URL = process.env.BASE_URL || 'https://luis-mobile-detailing.vercel.app'
+
+async function createVapiAssistant(business_name, owner_name) {
+  const VAPI_API_KEY = process.env.VAPI_API_KEY
+  if (!VAPI_API_KEY) throw new Error('VAPI_API_KEY not set')
+
+  const config = buildBasicAgentConfig(business_name, owner_name, BASE_URL)
+  const res = await fetch('https://api.vapi.ai/assistant', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${VAPI_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(config),
+  })
+  const json = await res.json()
+  if (!res.ok) throw new Error(`Vapi error ${res.status}: ${JSON.stringify(json)}`)
+  return json.id
+}
 
 function generateBusinessId(businessName) {
   return businessName
@@ -25,12 +45,15 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { business_name, owner_name, owner_phone, owner_email } = req.body || {}
+  const { business_name, owner_name, owner_phone, owner_email, voice_pin } = req.body || {}
 
   if (!business_name?.trim()) return res.status(400).json({ error: 'business_name is required' })
   if (!owner_name?.trim())   return res.status(400).json({ error: 'owner_name is required' })
   if (!owner_phone?.trim())  return res.status(400).json({ error: 'owner_phone is required' })
   if (!owner_email?.trim())  return res.status(400).json({ error: 'owner_email is required' })
+  if (!voice_pin || !/^\d{4}$/.test(String(voice_pin).trim())) {
+    return res.status(400).json({ error: 'voice_pin must be exactly 4 digits' })
+  }
 
   const business_id = generateBusinessId(business_name)
 
@@ -68,6 +91,7 @@ module.exports = async function handler(req, res) {
       owner_name: owner_name.trim(),
       owner_phone: normalizedPhone,
       email: owner_email.trim(),
+      voice_pin: String(voice_pin).trim(),
       features: { chat: false, voice: false, marketing: false },
       timezone: 'America/Los_Angeles',
     })
@@ -76,6 +100,24 @@ module.exports = async function handler(req, res) {
     console.error('[detailer-signup] businesses insert error:', bizError)
     return res.status(500).json({ error: 'Something went wrong. Please try again.' })
   }
+
+  // Create basic Vapi agent — non-fatal if it fails
+  // Use UPDATE scoped to the exact business_id just inserted (bizError check above ensures it exists)
+  // Never use a bare UPDATE without the .eq() filter — would overwrite every row
+  try {
+    const vapiAssistantId = await createVapiAssistant(business_name.trim(), owner_name.trim())
+    await supabase
+      .from('businesses')
+      .update({ vapi_assistant_id: vapiAssistantId })
+      .eq('id', business_id)
+      .is('vapi_assistant_id', null) // only update if no ID already set — prevents overwriting existing agents
+    console.log(`[detailer-signup] Vapi assistant created: ${vapiAssistantId} for ${business_id}`)
+  } catch (err) {
+    console.error('[detailer-signup] Vapi assistant creation failed:', err.message)
+  }
+
+  // Phone number auto-purchase not yet implemented — assign manually in Vapi dashboard
+  console.warn('[detailer-signup] Phone auto-purchase not implemented — assign number manually in Vapi dashboard for:', business_id)
 
   await supabase.from('business_profiles').insert({
     business_id,
@@ -111,7 +153,7 @@ module.exports = async function handler(req, res) {
     console.error('[detailer-signup] email send error:', err.message)
   }
 
-  return res.status(201).json({ success: true, business_id })
+  return res.status(201).json({ success: true, business_id, vapi_ready: !!vapiAssistantId })
 }
 
 function welcomeEmail({ business_name, owner_name, setup_phone }) {
@@ -150,6 +192,12 @@ function welcomeEmail({ business_name, owner_name, setup_phone }) {
               </tr>`).join('')}
             </table>
 
+            <div style="background:#fff4f5;border:1.5px solid #f06071;border-radius:10px;padding:20px;margin-top:24px;">
+              <p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#f06071;">Your AI receptionist is ALREADY set up.</p>
+              <p style="margin:0;font-size:14px;color:#444;line-height:1.6;">
+                Once we assign your phone number (we'll do this for you within 24 hours), she'll be live answering calls and capturing leads — before you've even done the onboarding call. Call <strong>${setup_phone}</strong> to teach her your services so she can start booking appointments directly.
+              </p>
+            </div>
             <p style="margin:24px 0 0;font-size:14px;color:#888;line-height:1.6;">
               The whole call takes about 5 minutes. After that, your AI receptionist will be ready to review and go live. You can call back anytime to make changes.
             </p>

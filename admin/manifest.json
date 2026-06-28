@@ -1,0 +1,25 @@
+{
+  "name": "Luis Mobile Detail — Admin",
+  "short_name": "LMD Admin",
+  "description": "Admin panel for Luis Mobile Detail",
+  "start_url": "/admin/",
+  "scope": "/admin/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f8fafc",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "/admin/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

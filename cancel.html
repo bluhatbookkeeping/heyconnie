@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancel Appointment — Luis Mobile Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #1d4ed8;
+      --blue-dark: #1e3a8a;
+      --red: #dc2626;
+      --text: #1a1a1a;
+      --bg-dark: #0f172a;
+      --bg-gray: #f8f9fa;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-gray);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: var(--bg-dark);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header a { text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    header .brand {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    header .sub { font-size: 12px; color: #94a3b8; font-weight: 400; }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 32px 28px;
+      max-width: 480px;
+      width: 100%;
+    }
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    .subtitle { color: #555; font-size: 15px; margin-bottom: 24px; }
+
+    /* Spinner */
+    .spinner {
+      display: flex; justify-content: center; padding: 32px 0;
+    }
+    .spinner::after {
+      content: '';
+      width: 36px; height: 36px;
+      border: 3px solid #e2e8f0;
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Booking summary */
+    .summary {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .summary-label { font-weight: 600; color: #15803d; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .summary-row { display: flex; gap: 8px; }
+    .summary-row .lbl { font-weight: 600; min-width: 90px; color: #374151; }
+
+    /* Buttons */
+    .btn-group { display: flex; flex-direction: column; gap: 10px; }
+    button {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-cancel { background: var(--red); color: #fff; }
+    .btn-cancel:hover:not(:disabled) { opacity: 0.88; }
+    .btn-keep { background: transparent; border: 2px solid #d1d5db; color: var(--text); }
+    .btn-keep:hover:not(:disabled) { border-color: #9ca3af; }
+
+    /* States */
+    .state { display: none; }
+    .state.active { display: block; }
+
+    /* Success */
+    .success-icon { font-size: 40px; margin-bottom: 12px; }
+    .reschedule-box {
+      margin-top: 20px;
+      padding: 14px 16px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .reschedule-box a { color: var(--blue); font-weight: 600; }
+
+    /* Error */
+    .error-icon { font-size: 36px; margin-bottom: 12px; }
+    .error-msg { color: #555; font-size: 15px; line-height: 1.6; }
+    .error-msg a { color: var(--blue); font-weight: 600; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#1d4ed8">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+    </svg>
+    <div>
+      <div class="brand">Luis Mobile Detail</div>
+      <div class="sub">San Gabriel Valley, CA</div>
+    </div>
+  </a>
+</header>
+
+<main>
+  <div class="card">
+
+    <!-- Loading -->
+    <div id="stateLoading" class="state active">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Booking found — confirm cancel -->
+    <div id="stateConfirm" class="state">
+      <h1>Cancel Appointment</h1>
+      <p class="subtitle">Review your booking before cancelling.</p>
+      <div class="summary">
+        <div class="summary-label">Your Booking</div>
+        <div class="summary-row"><span class="lbl">Name</span> <span id="bName"></span></div>
+        <div class="summary-row"><span class="lbl">Vehicle</span> <span id="bVehicle"></span></div>
+        <div class="summary-row"><span class="lbl">Service</span> <span id="bService"></span></div>
+        <div class="summary-row"><span class="lbl">Location</span> <span id="bCity"></span></div>
+        <div class="summary-row"><span class="lbl">Date &amp; Time</span> <span id="bAppt"></span></div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-cancel" id="btnCancel" onclick="confirmCancel()">Cancel My Appointment</button>
+        <button class="btn-keep" onclick="window.location.href='/'">Never mind — keep it</button>
+      </div>
+    </div>
+
+    <!-- Cancellation confirmed -->
+    <div id="stateSuccess" class="state">
+      <div class="success-icon">✅</div>
+      <h1>Appointment Cancelled</h1>
+      <p class="subtitle">Your appointment has been cancelled and Luis has been notified. The time slot has been freed.</p>
+      <div class="reschedule-box">
+        <strong>Want to rebook?</strong> Call our scheduling line at <a href="tel:6266541924">(626) 654-1924</a> — our assistant will help you find a new time.<br>
+        Or <a href="https://luis-mobile-detailing.vercel.app/#book">book online</a>.
+      </div>
+    </div>
+
+    <!-- Already cancelled / not found / error -->
+    <div id="stateError" class="state">
+      <div class="error-icon">⚠️</div>
+      <h1 id="errTitle">Link Not Valid</h1>
+      <p class="error-msg" id="errMsg">
+        This link has already been used or is no longer valid.<br><br>
+        Need help? Call or text Luis at <a href="tel:6264093147">626-409-3147</a>.
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<footer>© 2025 Luis Mobile Detail · San Gabriel Valley, CA</footer>
+
+<script>
+  const token = new URLSearchParams(window.location.search).get('token')
+
+  function show(id) {
+    document.querySelectorAll('.state').forEach(el => el.classList.remove('active'))
+    document.getElementById(id).classList.add('active')
+  }
+
+  function showError(title, msg) {
+    document.getElementById('errTitle').textContent = title
+    document.getElementById('errMsg').innerHTML = msg
+    show('stateError')
+  }
+
+  async function load() {
+    if (!token) {
+      showError('Invalid Link', 'No booking token found in this link. Please use the link from your confirmation email.')
+      return
+    }
+
+    try {
+      const res = await fetch(`/api/cancel-booking?token=${encodeURIComponent(token)}`)
+      if (res.status === 404) {
+        showError('Booking Not Found', 'We couldn\'t find a booking for this link. It may have expired or already been removed.<br><br>Need help? Call Luis at <a href="tel:6264093147">626-409-3147</a>.')
+        return
+      }
+      if (res.status === 410) {
+        const data = await res.json()
+        const msg = data.status === 'completed'
+          ? 'This appointment has already been completed and cannot be cancelled.'
+          : 'This appointment has already been cancelled.'
+        showError('Already Resolved', msg + '<br><br>Questions? Call Luis at <a href="tel:6264093147">626-409-3147</a>.')
+        return
+      }
+      if (!res.ok) throw new Error('Server error')
+
+      const b = await res.json()
+
+      document.getElementById('bName').textContent = b.name
+      document.getElementById('bVehicle').textContent = `${b.year} ${b.make} ${b.model}`
+      document.getElementById('bService').textContent = b.service
+      document.getElementById('bCity').textContent = b.city || '—'
+      document.getElementById('bAppt').textContent = b.start_datetime
+        ? new Date(b.start_datetime).toLocaleString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', timeZone:'America/Los_Angeles', timeZoneName:'short' })
+        : 'TBD — Luis will confirm'
+
+      show('stateConfirm')
+    } catch {
+      showError('Something Went Wrong', 'We had trouble loading your booking. Please try again or call Luis at <a href="tel:6264093147">626-409-3147</a>.')
+    }
+  }
+
+  async function confirmCancel() {
+    const btn = document.getElementById('btnCancel')
+    btn.disabled = true
+    btn.textContent = 'Cancelling…'
+
+    try {
+      const res = await fetch(`/api/cancel-booking?token=${encodeURIComponent(token)}`, { method: 'POST' })
+      if (res.status === 410) {
+        showError('Already Cancelled', 'This appointment was already cancelled.')
+        return
+      }
+      if (!res.ok) throw new Error('Server error')
+      show('stateSuccess')
+    } catch {
+      btn.disabled = false
+      btn.textContent = 'Cancel My Appointment'
+      alert('Something went wrong. Please call Luis at 626-409-3147 to cancel.')
+    }
+  }
+
+  load()
+</script>
+
+</body>
+</html>
