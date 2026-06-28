@@ -48,6 +48,18 @@ module.exports = async function handler(req, res) {
 
   const normalizedPhone = owner_phone.replace(/\D/g, '').slice(-10)
 
+  const { data: existingPhone } = await supabase
+    .from('businesses')
+    .select('id')
+    .eq('owner_phone', normalizedPhone)
+    .maybeSingle()
+
+  if (existingPhone) {
+    return res.status(409).json({
+      error: 'That phone number is already registered to another account. Please use a different number.'
+    })
+  }
+
   const { error: bizError } = await supabase
     .from('businesses')
     .insert({
