@@ -1142,7 +1142,7 @@
             </div>
             <div class="field">
               <label for="owner_phone">Phone Number</label>
-              <input type="tel" id="owner_phone" name="owner_phone" placeholder="(626) 555-1234" required autocomplete="tel">
+              <input type="tel" id="owner_phone" name="owner_phone" placeholder="(626) 555-1234" required autocomplete="tel" maxlength="14" oninput="this.value=this.value.replace(/[^\d]/g,'').slice(0,10).replace(/(\d{0,3})(\d{0,3})(\d{0,4})/,(_,a,b,c)=>a+(b?'-'+b:'')+(c?'-'+c:''))">
             </div>
             <div class="field">
               <label for="owner_email">Email Address</label>
