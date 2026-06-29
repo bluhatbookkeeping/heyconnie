@@ -531,29 +531,30 @@ ${galleryHtml}
 <!-- BOOKING FORM -->
 <section class="booking-section" id="book">
   <div class="container">
-    <p class="label">Schedule Your Detail</p>
-    <h2 class="h2">Book an Appointment</h2>
-    <p class="desc">Fill out the form and we'll confirm your booking. Have questions? Call us directly.</p>
+    <p class="label">Book an Appointment</p>
     <div class="form-wrap">
       <div>
+        <h2 class="h2" style="margin-bottom:14px">Request Your Detail</h2>
+        <p class="desc" style="margin-bottom:28px">Fill out the form and Luis will follow up with pricing and availability based on your vehicle and the service you need.</p>
         ${phone ? `<div class="form-contact-box">
           <h4>Prefer to Call?</h4>
-          <p>We're happy to answer any questions and book your appointment over the phone.</p>
+          <p>For faster service, call Luis directly. He can answer questions, give you a price, and confirm availability right away.</p>
           <a href="tel:${phoneBare}">${phoneFmt}</a>
         </div>` : ''}
       </div>
       <div class="form-box" id="bookingBox">
         <!-- Screen: phone lookup -->
         <div id="scrPhone">
-          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:6px">Let's Get You Booked</h3>
-          <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Enter your phone number and we'll pull up your info.</p>
+          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:6px">Book Your Detail</h3>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Enter your phone number to get started.<br>Booked with us before? We'll pull up your details.</p>
           <div class="hc-form">
             <div class="hf-group">
               <label for="bkPhone">Phone Number</label>
-              <input type="tel" id="bkPhone" placeholder="(626) 555-0100" autocomplete="tel">
+              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" autocomplete="tel">
             </div>
-            <button class="hf-submit" id="bkPhoneBtn" type="button">Continue</button>
+            <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
             <div class="hf-msg" id="bkPhoneMsg"></div>
+            ${phone ? `<p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneFmt}</a></p>` : ''}
           </div>
         </div>
 
