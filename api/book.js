@@ -9,8 +9,6 @@ const supabase = createClient(
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const BUSINESS_ID = 'luis-mobile-detail'
-
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -22,7 +20,11 @@ module.exports = async function handler(req, res) {
     service, condition, notes,
     date, time,
     start_datetime, promo_code,
+    business_id: bodyBusinessId,
+    sms_consent,
   } = req.body
+
+  const BUSINESS_ID = bodyBusinessId?.trim() || 'luis-mobile-detail'
 
   // Validate required fields
   const missing = ['name', 'phone', 'city', 'make', 'model', 'year', 'service']
@@ -189,6 +191,7 @@ module.exports = async function handler(req, res) {
     source: 'form',
     status: 'new',
     cancel_token: cancelToken,
+    sms_consent_at: sms_consent ? new Date().toISOString() : null,
   })
   .select('id')
   .single()

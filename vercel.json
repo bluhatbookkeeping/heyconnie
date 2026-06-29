@@ -1,8 +1,9 @@
 {
-  "routes": [
-    { "src": "/cancel", "dest": "/cancel.html" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/cancel",             "destination": "/cancel.html" },
+    { "source": "/book/:slug",         "destination": "/api/book-widget?slug=:slug" },
+    { "source": "/:slug((?!api|admin|book|embed|cancel|public)[^/.]+)", "destination": "/api/b/:slug" },
+    { "source": "/(.*)",               "destination": "/index.html" }
   ],
   "crons": [
     { "path": "/api/cron/complete-bookings",    "schedule": "0 13 * * *"   },

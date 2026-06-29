@@ -1238,6 +1238,13 @@
         </svg>
         <span>Biz Profile</span>
       </button>
+      <button class="nav-item" onclick="showTab('mywebsite', this)" data-label="My Website">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M8 2a10 10 0 010 12M2 8h12M3 5a10 10 0 0110 0M3 11a10 10 0 0110 0"/>
+        </svg>
+        <span>My Website</span>
+      </button>
     </nav>
   </div>
 
@@ -1987,6 +1994,85 @@
         </div><!-- /bpForm -->
       </div><!-- /bizprofilePane -->
 
+      <!-- ── My Website ─────────────────────────────────────────────────── -->
+      <div id="mywebsitePane" class="tab-pane">
+        <div class="page-header">
+          <h2 class="page-title">My Website</h2>
+          <p style="font-size:.85rem;color:var(--text-sub);margin-top:4px">Your hosted booking page at <a id="webLiveLink" href="#" target="_blank" style="color:var(--blue)">heyconnie.co/<span id="webSlugDisplay">…</span></a></p>
+        </div>
+
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-section">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+              <div>
+                <div style="font-weight:600;margin-bottom:2px">Publish Your Website</div>
+                <div style="font-size:.85rem;color:var(--text-sub)">When on, your page is live and bookable.</div>
+              </div>
+              <label class="toggle-label" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                <span id="webToggleStatus" style="font-size:.85rem;color:var(--text-sub)">Off</span>
+                <input type="checkbox" id="webEnabledToggle" style="display:none" onchange="saveWebsiteToggle()">
+                <div id="webToggleTrack" style="width:44px;height:24px;border-radius:12px;background:#cbd5e1;position:relative;transition:background .2s;cursor:pointer" onclick="document.getElementById('webEnabledToggle').click()">
+                  <div id="webToggleThumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>
+                </div>
+              </label>
+            </div>
+            <div id="webLinkRow" style="display:none;margin-top:14px;align-items:center;gap:10px">
+              <input type="text" id="webLinkCopy" readonly style="flex:1;font-size:.85rem;background:var(--bg-sidebar);color:var(--text-sub)">
+              <button class="btn btn-outline btn-sm" onclick="copyWebLink()">Copy Link</button>
+              <a id="webOpenBtn" href="#" target="_blank" class="btn btn-outline btn-sm">Open ↗</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-section">
+            <div style="font-weight:600;margin-bottom:16px">Customize</div>
+            <div style="display:grid;gap:14px">
+              <div>
+                <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:6px">Tagline</label>
+                <input type="text" id="webTagline" maxlength="80" placeholder="Mobile Car Detailing in the San Gabriel Valley">
+              </div>
+              <div>
+                <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:6px">Hero Image URL <span style="font-weight:400;color:var(--text-sub)">(optional)</span></label>
+                <input type="url" id="webHeroUrl" placeholder="https://…/photo.jpg" oninput="previewImage('webHeroPreview', this.value)">
+                <img id="webHeroPreview" src="" alt="" style="display:none;margin-top:8px;width:100%;max-height:160px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">
+              </div>
+              <div>
+                <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:6px">Instagram URL</label>
+                <input type="url" id="webInstagram" placeholder="https://www.instagram.com/yourbusiness/">
+              </div>
+              <div>
+                <label style="display:block;font-size:.82rem;font-weight:600;margin-bottom:6px">Facebook URL <span style="font-weight:400;color:var(--text-sub)">(optional)</span></label>
+                <input type="url" id="webFacebook" placeholder="https://www.facebook.com/yourbusiness/">
+              </div>
+            </div>
+          </div>
+          <div class="card-footer" style="justify-content:flex-start;gap:12px">
+            <button class="btn btn-primary btn-sm" onclick="saveWebsiteSettings()" id="webSaveBtn">Save Changes</button>
+            <span id="webSaveStatus" style="font-size:.82rem;color:var(--text-sub)"></span>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-section">
+            <div style="font-weight:600;margin-bottom:4px">Booking Widget Embed Code</div>
+            <p style="font-size:.85rem;color:var(--text-sub);margin-bottom:14px">Already have a website? Paste this into any page to add AI booking.</p>
+            <textarea id="webEmbedCode" readonly rows="4" style="font-family:var(--mono);font-size:.78rem;background:var(--bg-sidebar);color:var(--text-sub);resize:none;width:100%"></textarea>
+            <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="copyEmbedCode()">Copy Embed Code</button>
+          </div>
+        </div>
+
+        <div class="card" style="opacity:.6">
+          <div class="card-section">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <div style="font-weight:600">Custom Domain</div>
+              <span style="font-size:.7rem;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber);border-radius:4px;padding:1px 7px;font-weight:600">Coming Soon</span>
+            </div>
+            <p style="font-size:.85rem;color:var(--text-sub)">Want your own domain like luismobiledetailing.com? This will be an available add-on.</p>
+          </div>
+        </div>
+      </div><!-- /mywebsitePane -->
+
     </div><!-- /content -->
   </div><!-- /main-area -->
 
@@ -2237,6 +2323,7 @@
     loadCampaigns()
     loadTrainAI()
     loadBizProfile()
+    loadMyWebsite()
     initPlacesAutocomplete()
   }
 
@@ -2290,7 +2377,7 @@
   const TAB_LABELS = {
     bookings: 'Bookings', customers: 'Customers', promos: 'Promotions',
     loyalty: 'Loyalty', campaigns: 'Campaigns', services: 'Services', settings: 'Settings',
-    trainai: 'Train AI', bizprofile: 'Business Profile'
+    trainai: 'Train AI', bizprofile: 'Business Profile', mywebsite: 'My Website'
   }
   const DRAWER_TABS = new Set(['services', 'trainai', 'bizprofile'])
 
@@ -5216,6 +5303,112 @@
     }
   }
 
+  // ── My Website ────────────────────────────────────────────────────────────
+
+  let webBizId = null
+
+  async function loadMyWebsite() {
+    const { data: biz } = await supabase
+      .from('businesses')
+      .select('id,website_enabled,website_template,tagline,hero_image_url,instagram,facebook_url')
+      .single()
+    if (!biz) return
+
+    webBizId = biz.id
+    const slug = biz.id
+    const baseUrl = 'https://heyconnie.co/' + slug
+    const embedCode = `<iframe src="https://heyconnie.co/book/${slug}" width="100%" height="700" frameborder="0" style="border:none;border-radius:12px"></iframe>`
+
+    document.getElementById('webSlugDisplay').textContent = slug
+    document.getElementById('webLiveLink').href = baseUrl
+    document.getElementById('webLinkCopy').value = baseUrl
+    document.getElementById('webOpenBtn').href = baseUrl
+    document.getElementById('webEmbedCode').value = embedCode
+
+    // Toggle state
+    const enabled = !!biz.website_enabled
+    setWebToggle(enabled)
+    if (enabled) showWebLink(true)
+
+    // Customize fields
+    if (biz.tagline)       document.getElementById('webTagline').value = biz.tagline
+    if (biz.hero_image_url) {
+      document.getElementById('webHeroUrl').value = biz.hero_image_url
+      previewImage('webHeroPreview', biz.hero_image_url)
+    }
+    if (biz.instagram)    document.getElementById('webInstagram').value = biz.instagram
+    if (biz.facebook_url) document.getElementById('webFacebook').value = biz.facebook_url
+  }
+
+  function setWebToggle(enabled) {
+    const toggle = document.getElementById('webEnabledToggle')
+    const track  = document.getElementById('webToggleTrack')
+    const thumb  = document.getElementById('webToggleThumb')
+    const status = document.getElementById('webToggleStatus')
+    toggle.checked = enabled
+    track.style.background = enabled ? 'var(--blue)' : '#cbd5e1'
+    thumb.style.transform  = enabled ? 'translateX(20px)' : 'translateX(0)'
+    status.textContent = enabled ? 'Live' : 'Off'
+    status.style.color = enabled ? 'var(--green)' : 'var(--text-sub)'
+    showWebLink(enabled)
+  }
+
+  function showWebLink(show) {
+    document.getElementById('webLinkRow').style.display = show ? 'flex' : 'none'
+  }
+
+  async function saveWebsiteToggle() {
+    const enabled = document.getElementById('webEnabledToggle').checked
+    setWebToggle(enabled)
+    await postWebsiteSettings({ website_enabled: enabled })
+  }
+
+  async function saveWebsiteSettings() {
+    const btn = document.getElementById('webSaveBtn')
+    const status = document.getElementById('webSaveStatus')
+    btn.disabled = true
+    btn.textContent = 'Saving…'
+    status.textContent = ''
+
+    await postWebsiteSettings({
+      tagline:        document.getElementById('webTagline').value.trim() || null,
+      hero_image_url: document.getElementById('webHeroUrl').value.trim() || null,
+      instagram:      document.getElementById('webInstagram').value.trim() || null,
+      facebook_url:   document.getElementById('webFacebook').value.trim() || null,
+    })
+
+    btn.disabled = false
+    btn.textContent = 'Save Changes'
+    status.textContent = '✓ Saved'
+    setTimeout(() => { status.textContent = '' }, 3000)
+  }
+
+  async function postWebsiteSettings(fields) {
+    if (!webBizId) return
+    await fetch('/api/admin/update-website', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ business_id: webBizId, ...fields }),
+    })
+  }
+
+  function previewImage(imgId, url) {
+    const img = document.getElementById(imgId)
+    if (!url) { img.style.display = 'none'; return }
+    img.src = url
+    img.style.display = 'block'
+    img.onerror = () => { img.style.display = 'none' }
+  }
+
+  function copyWebLink() {
+    const val = document.getElementById('webLinkCopy').value
+    navigator.clipboard.writeText(val).catch(() => {})
+  }
+
+  function copyEmbedCode() {
+    const val = document.getElementById('webEmbedCode').value
+    navigator.clipboard.writeText(val).catch(() => {})
+  }
 
 </script>
 

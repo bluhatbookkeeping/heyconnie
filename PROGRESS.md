@@ -5,6 +5,71 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
+## Session 78 — 2026-06-28
+
+### CURRENT PHASE: Phase 5 — Website Builder + Hosted Pages ✅ (Steps 1–6)
+### LAST COMPLETED: All 6 build steps
+### NEXT: Push to main → verify heyconnie.co/luis-mobile-detail renders live
+
+---
+
+### What Was Done
+
+**Phase 5: Website Builder + Hosted Pages — Steps 1–6 complete.**
+
+**Step 1 — DB Migration** (applied via Supabase MCP):
+- `businesses` new columns: `website_template`, `website_enabled`, `facebook_url`, `hero_image_url`, `gallery_image_urls`, `tagline`, `website_custom_domain`
+- `bookings` new column: `sms_consent_at TIMESTAMPTZ`
+- Luis seeded: `website_enabled = true`, `website_template = 'clean-pro'`, `tagline` set, Instagram set
+
+**Step 2 — One-Pager Express template** (`api/b/[slug].js`):
+- Vercel dynamic route — `heyconnie.co/luis-mobile-detail` renders a full branded microsite
+- Pulls from `businesses` + `services` tables
+- Full inline booking form (service, contact, vehicle make/model/year w/ cascading, date, time, notes, promo, SMS consent)
+- CAR_DATA for 26 makes inline
+- 404 → branded "not found" page with CTA to sign up
+- SMS/TCPA consent checkbox required before submit
+- "Powered by Hey Connie" footer
+
+**Step 3 — vercel.json rewrite rules** (converted from legacy `routes` to `rewrites`):
+- `/book/:slug` → `api/book-widget?slug=:slug`
+- `/:slug((?!api|admin|book|embed|cancel|public)[^/.]+)` → `api/b/:slug`
+- All 13 cron jobs preserved
+
+**Step 4 — Booking widget** (`api/book-widget.js`):
+- `heyconnie.co/book/luis-mobile-detail` renders form-only page (no chrome)
+- `X-Frame-Options: ALLOWALL` for iframe embedding
+- Same booking form, same SMS consent, posts to `https://heyconnie.co/api/book`
+
+**Step 5 — SMS consent** (`api/book.js`):
+- Accepts `business_id` from request body (falls back to `'luis-mobile-detail'`)
+- Logs `sms_consent_at` timestamp when consent given
+
+**Step 6 — Admin "My Website" tab** (`admin/index.html`):
+- Nav button added after "Biz Profile"
+- TAB_LABELS updated to include `mywebsite`
+- `loadMyWebsite()` called on dashboard init
+- Pane: publish toggle, live URL display + copy button, customize form (tagline, hero image, Instagram, Facebook), embed code, custom domain placeholder
+- `api/admin/update-website.js` — JWT-authenticated endpoint, updates `businesses` table
+
+### What's NOT Done (do next)
+1. **Push to main** — confirm Andrew then push. Vercel auto-deploy will make it live.
+2. **Verify live** — `heyconnie.co/luis-mobile-detail` should render, booking form should submit
+3. **Test widget in iframe** — paste embed code in a blank HTML file, confirm it loads
+4. **Build remaining 4 templates** — Clean Pro, Bold & Dark, Local Trust, Gallery First (Phase 5 Step 6)
+5. **Update CLAUDE.md** — add Phase 5 to "What's Done"
+
+### Verification Checklist (do after push)
+- [ ] `heyconnie.co/luis-mobile-detail` renders with "Luis Mobile Detail" and service cards
+- [ ] Booking form submits and creates a booking in Supabase
+- [ ] `bookings.sms_consent_at` is set on submission
+- [ ] `heyconnie.co/book/luis-mobile-detail` renders form only
+- [ ] `heyconnie.co/nonexistent` returns branded 404
+- [ ] Admin "My Website" tab loads, toggle saves, tagline saves
+- [ ] Embed iframe works on a blank page
+
+---
+
 ## Session 77 — 2026-06-28
 
 ### CURRENT PHASE: Phase 4 — Consolidation into heyconnie ✅
