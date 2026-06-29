@@ -478,14 +478,15 @@ function renderBoldDark({ business, services }) {
   <div class="container">
     <div class="about-grid">
       <div>
-        <p class="label fu">About Us</p>
-        <h2 class="h2 fu">Detailing Done Right,<br>Right at Your Door</h2>
-        <p class="desc fu">Luis Mobile Detail brings professional car detailing directly to your home, office, or location. From a quick wash to a full interior and exterior detail, Luis takes pride in doing the job by hand and making every vehicle look its best. Based in Pasadena, we serve the entire San Gabriel Valley and surrounding Los Angeles area. No need to take your car anywhere — just schedule a time and we'll handle the rest.</p>
+        <p class="label fu">About Luis Mobile Detail</p>
+        <h2 class="h2 fu">Professional Detailing That Comes to You</h2>
+        <p class="desc fu">Luis Mobile Detail brings professional car detailing directly to your home, office, or location. From a quick wash to a full interior and exterior detail, Luis takes pride in doing the job by hand and making every vehicle look its best.</p>
+        <p class="desc fu" style="margin-top:14px">Based in Pasadena, we serve the entire San Gabriel Valley and surrounding Los Angeles area. No need to take your car anywhere — just schedule a time and we'll handle the rest.</p>
         <div class="about-stats">
           <div class="about-stat fu"><div class="about-stat-num">100%</div><div class="about-stat-lbl">Hand wash, every time</div></div>
-          <div class="about-stat fu"><div class="about-stat-num">SGV</div><div class="about-stat-lbl">Local Pasadena based</div></div>
-          <div class="about-stat fu"><div class="about-stat-num">3</div><div class="about-stat-lbl">Service packages</div></div>
-          <div class="about-stat fu"><div class="about-stat-num">On-Site</div><div class="about-stat-lbl">We come to your location</div></div>
+          <div class="about-stat fu" style="transition-delay:.08s"><div class="about-stat-num">SGV</div><div class="about-stat-lbl">Local Pasadena based</div></div>
+          <div class="about-stat fu" style="transition-delay:.16s"><div class="about-stat-num">3</div><div class="about-stat-lbl">Service packages</div></div>
+          <div class="about-stat fu" style="transition-delay:.24s"><div class="about-stat-num">On-Site</div><div class="about-stat-lbl">We come to your location</div></div>
         </div>
       </div>
       <div class="about-img fu">
