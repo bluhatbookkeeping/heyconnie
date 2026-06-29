@@ -881,7 +881,7 @@ ${galleryHtml}
     chatOpen = !chatOpen
     panel.classList.toggle('open', chatOpen)
     if (chatOpen && !chatMessages.children.length) {
-      addMsg("Hi! I’m Connie. How can I help you today?", ‘agent’)
+      addMsg("Hi! I'm Connie. How can I help you today?", 'agent')
     }
     if (chatOpen && chatInput) chatInput.focus()
   })
