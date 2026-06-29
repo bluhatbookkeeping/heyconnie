@@ -545,8 +545,8 @@ ${svcs.length ? `
 <!-- TRUST TILES -->
 <section class="section">
   <div class="container">
-    <p class="label fu" style="text-align:center">Why Choose Luis</p>
-    <h2 class="h2 fu" style="text-align:center">What You Can Expect</h2>
+    <p class="label fu">Why Choose Luis</p>
+    <h2 class="h2 fu">What You Can Expect</h2>
     <div class="trust-grid">
       ${[
         {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>`, text:'100% Hand Wash — Every Time'},
