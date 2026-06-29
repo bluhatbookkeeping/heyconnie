@@ -30,6 +30,7 @@ function renderBoldDark({ business, services }) {
   const apiBase    = biz.base_url || 'https://heyconnie.co'
   const heroImg    = biz.hero_image_url || ''
   const gallery    = Array.isArray(biz.gallery_image_urls) ? biz.gallery_image_urls.filter(Boolean) : []
+  const aboutImg   = (biz.features && biz.features.about_image_url) || ''
 
   const svcs = services || []
   const midIndex = Math.floor((svcs.length - 1) / 2)
@@ -489,8 +490,8 @@ function renderBoldDark({ business, services }) {
           <div class="about-stat fu" style="transition-delay:.24s"><div class="about-stat-num">On-Site</div><div class="about-stat-lbl">We come to your location</div></div>
         </div>
       </div>
-      <div class="about-img fu">
-        ${gallery.length ? `<img src="${escHtml(gallery[0])}" alt="${bizName}">` : ''}
+      <div class="about-img fu" style="${aboutImg ? 'background:none;padding:0;border-radius:var(--rl);overflow:hidden;border:none' : ''}">
+        ${aboutImg ? `<img src="${escHtml(aboutImg)}" alt="${escHtml(bizName)} - professional car detailing" style="width:100%;height:100%;object-fit:cover;border-radius:var(--rl)">` : gallery.length ? `<img src="${escHtml(gallery[0])}" alt="${escHtml(bizName)}">` : ''}
       </div>
     </div>
   </div>

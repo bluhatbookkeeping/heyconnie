@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
 
   const { data: biz } = await supabase
     .from('businesses')
-    .select('id,name,phone,email,instagram,facebook_url,tagline,owner_name,base_url,website_template,website_enabled,gallery_image_urls,hero_image_url')
+    .select('id,name,phone,email,instagram,facebook_url,tagline,owner_name,base_url,website_template,website_enabled,gallery_image_urls,hero_image_url,features,service_area')
     .eq('id', slug)
     .eq('website_enabled', true)
     .maybeSingle()
