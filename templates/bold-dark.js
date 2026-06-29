@@ -78,10 +78,10 @@ function renderBoldDark({ business, services }) {
 
   const galleryHtml = gallery.length ? `
   <section class="section section--gray" id="gallery">
-    <div class="container">
+    <div class="container" style="text-align:center">
       <p class="label">See Our Work</p>
       <h2 class="h2">Real Cars. Real Results.</h2>
-      ${igHandle ? `<p class="ig-handle">@${escHtml(igHandle)}</p>` : ''}
+      ${instagram && igHandle ? `<p style="font-size:15px;color:var(--muted);margin-bottom:8px;max-width:520px;margin-left:auto;margin-right:auto">Follow ${bizName} on Instagram to see recent details, before-and-after photos, and finished cars.</p><p class="ig-handle" style="margin-bottom:28px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" style="color:var(--blue)">@${escHtml(igHandle)}</a></p>` : igHandle ? `<p class="ig-handle">@${escHtml(igHandle)}</p>` : ''}
       <div class="ig-grid">
         ${gallery.map(url => {
           const inner = `<img src="${escHtml(url)}" alt="Detail work"><div class="ig-overlay"><span class="ig-overlay-txt">View on Instagram</span></div>`
@@ -90,7 +90,7 @@ function renderBoldDark({ business, services }) {
             : `<div class="ig-cell">${inner}</div>`
         }).join('')}
       </div>
-      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">View Instagram &rarr; @${escHtml(igHandle)}</a></div>` : ''}
+      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">View Instagram &mdash; @${escHtml(igHandle)}</a></div>` : ''}
     </div>
   </section>` : ''
 
@@ -578,7 +578,7 @@ ${galleryHtml}
         ${phone ? `<div class="form-contact-box">
           <h4>Prefer to Call?</h4>
           <p>For faster service, call Luis directly. He can answer questions, give you a price, and confirm availability right away.</p>
-          <a href="tel:${phoneBare}">${phoneFmt}</a>
+          <a href="tel:${phoneBare}">☎ ${phoneNav}</a>
         </div>` : ''}
       </div>
       <div class="form-box" id="bookingBox">
@@ -588,12 +588,12 @@ ${galleryHtml}
           <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Enter your phone number to get started.<br>Booked with us before? We'll pull up your details.</p>
           <div class="hc-form">
             <div class="hf-group">
-              <label for="bkPhone" style="text-align:left">Phone Number</label>
+              <label for="bkPhone" style="text-align:center">Phone Number</label>
               <input type="tel" id="bkPhone" placeholder="(626) 555-1234" autocomplete="tel" style="text-align:center">
             </div>
             <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
             <div class="hf-msg" id="bkPhoneMsg"></div>
-            ${phone ? `<p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneFmt}</a></p>` : ''}
+            ${phone ? `<p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneNav}</a></p>` : ''}
           </div>
         </div>
 
