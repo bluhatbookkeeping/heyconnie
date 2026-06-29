@@ -746,6 +746,28 @@ ${galleryHtml}
   </div>
 </footer>
 
+<!-- Chat widget HTML -->
+<button id="chatBubble" aria-label="Chat with us">
+  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+<div id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-header-avatar">👩</div>
+    <div>
+      <div class="chat-header-name">Connie</div>
+      <div class="chat-header-status">AI Assistant &bull; Typically replies instantly</div>
+    </div>
+    <button id="chatClose" aria-label="Close chat">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div id="chatMessages"></div>
+  <div class="chat-input-row">
+    <input id="chatInput" type="text" placeholder="Ask me anything…">
+    <button id="chatSend">Send</button>
+  </div>
+</div>
+
 <script>
 (function(){
   // --- Nav ---
@@ -950,28 +972,6 @@ ${galleryHtml}
   if (chatInput) chatInput.addEventListener('keydown', function(e){ if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat() } })
 })()
 </script>
-
-<!-- Chat widget HTML -->
-<button id="chatBubble" aria-label="Chat with us">
-  <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-</button>
-<div id="chatPanel">
-  <div class="chat-header">
-    <div class="chat-header-avatar">👩</div>
-    <div>
-      <div class="chat-header-name">Connie</div>
-      <div class="chat-header-status">AI Assistant &bull; Typically replies instantly</div>
-    </div>
-    <button id="chatClose" aria-label="Close chat">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-  </div>
-  <div id="chatMessages"></div>
-  <div class="chat-input-row">
-    <input id="chatInput" type="text" placeholder="Ask me anything…">
-    <button id="chatSend">Send</button>
-  </div>
-</div>
 
 </body>
 </html>`
