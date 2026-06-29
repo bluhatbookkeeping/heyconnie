@@ -543,7 +543,7 @@ ${svcs.length ? `
 </section>` : ''}
 
 <!-- TRUST TILES -->
-<section class="section">
+<section class="section section--gray">
   <div class="container">
     <p class="label fu">Why Choose Luis</p>
     <h2 class="h2 fu">What You Can Expect</h2>
