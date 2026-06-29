@@ -5,6 +5,121 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
+## Session 82 — 2026-06-29 (continued)
+
+### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match to luis-mobile-detailing.vercel.app
+### LAST COMPLETED: Nav, About, Services, Pricing, Trust tiles, Booking section all fixed and deployed
+### NEXT: Full side-by-side visual QA pass; then Phase 3 (api/book-widget.js)
+
+---
+
+### What Was Done
+
+**Root cause found and fixed — services/pricing sections were invisible:**
+- `api/b/[slug].js` was querying `description` column from `services` table — column doesn't exist
+- Supabase silently returned empty array → `svcs.length === 0` → services + pricing sections never rendered
+- Fix: removed `description` from select. Also added `features` and `service_area` to businesses select.
+
+**Root cause found and fixed — ALL page JS was broken (About, Trust tiles invisible):**
+- `templates/bold-dark.js` line 884 had curly/smart quotes U+2018/U+2019 as JS string delimiters
+- `addMsg("Hi! I'm Connie...", 'agent')` — the `'agent'` used curly quotes → SyntaxError
+- Crashed entire `<script>` block → IntersectionObserver never ran → all `.fu` elements stayed at opacity:0
+- Fix: replaced with straight ASCII quotes via Python script
+
+**DB changes (Supabase, project kgyipdyhzaypcxcpxqsg):**
+- `businesses.phone` updated: `626-409-3147` → `6266541924` (Hey Connie Vapi number, formats to (626) 654-1924)
+- `businesses.features` updated: added `about_image_url: "https://luis-mobile-detailing.vercel.app/images/IMG_9951.PNG"`
+
+**`templates/bold-dark.js` changes (commits bf3e198 → 6a08f83):**
+- About section: label → "About Luis Mobile Detail", h2 → "Professional Detailing That Comes to You", split into 2 paragraphs, staggered stat transition-delays, uses `features.about_image_url` for right-side image
+- Services section: added `SVC_DETAILS` lookup with descriptions + checklists per service name (hardcoded for Luis pilot); subtitle updated; svc-card is now flex-column
+- Pricing section: h2 → "Simple, Honest Pricing", subtitle matches original, price note → "Starting price — call for exact quote", disclaimer includes phone + link, added "Call for a Quote / Request Appointment Online" CTA
+- Trust tiles: replaced 8 emoji placeholders with exact SVGs from original site; label → "Why Choose Luis"; heading left-aligned
+- Gallery section: `section--dark` → `section--gray` (white/light bg); Instagram button → `btn-primary` (blue); `ig-handle` color fixed for light bg
+- Booking section: `bg-dark` → `bg-gray`; copy matches original exactly ("Request Your Detail", "Book Your Detail", "Get Started", "Or call us"); `#scrPhone` centered
+- Nav: dash phone format `626-654-1924`; links → Services | Pricing | Book Appointment | Instagram | Contact; subtitle shows first city only (Pasadena); added `id="pricing"` to pricing section
+- Added `phoneNav` variable (XXX-XXX-XXXX format)
+- Added `aboutImg` variable from `biz.features.about_image_url`
+
+**`api/b/[slug].js` changes:**
+- Added `features` and `service_area` to businesses select
+- Removed nonexistent `description` from services select
+
+### What's Working and Verified (via Chrome DevTools screenshots)
+- Phone number: (626) 654-1924 confirmed in nav and booking section
+- Booking section: gray bg, white form box, centered right column, correct copy ✅
+- Gallery: light background, blue Instagram button ✅
+- Nav: correct links, dash phone format ✅
+- Trust tiles: SVG icons, left-aligned heading ✅
+- Services section: all 3 cards with checklists render (after services query fix) ✅
+- No JS console errors after curly quote fix ✅
+
+### What's NOT Verified Yet
+- Full page side-by-side with original (About image, all sections visible at once)
+- Booking form end-to-end (phone lookup → returning/new customer)
+- Chat widget
+- Mobile layout
+
+### Decisions Made
+- Service checklists hardcoded in template `SVC_DETAILS` lookup by name (not in DB) — acceptable for pilot, should become DB-driven later
+- About image stored in `businesses.features.about_image_url` JSONB — avoids schema migration, works for pilot
+- Phone hotlinks from `luis-mobile-detailing.vercel.app/images/` — works now, will need re-hosting if that domain moves
+- Never use `\'` or curly quotes inside template literal JS strings
+
+### Issues Hit
+- Smart/curly quotes (U+2018/U+2019) silently introduced by editor autocorrect killed all page JS
+- `services.description` column referenced in route but never existed in DB schema
+- `section--dark` on gallery made it navy instead of white/light like the original
+- `formatPhone` returns `(626) 654-1924` but nav needs `626-654-1924` — added separate `phoneNav`
+
+---
+
+### What Was Done
+
+**`templates/bold-dark.js` — full rewrite via sequential Edit calls (467 → 940 lines):**
+- Added CSS: fade-up animations (`.fu`/`.fu.vis`), About, Pricing, Trust tiles, service checklists, gallery border fix, chat widget, 3-col footer, responsive breakpoints
+- Added HTML sections: About (stats grid + image), Pricing (3-col cards + disclaimer), Trust tiles (8 items), Instagram button in hero + CTA, 3-column footer with SVG icons + Services column
+- Replaced `renderBookingForm()` call with inline phone-first booking form: phone entry → `/api/lookup-customer` → returning or new customer path → `/api/book`
+- Added chat widget HTML + JS (bubble, panel, messages, `/api/chat`)
+- Injected `SLUG` + `API_BASE` as `<script>` globals in `<head>` for multi-tenant client JS
+- Removed `const { renderBookingForm }` require — kept `escHtml` only from `booking-form.js`
+- Gallery: cells wrapped in `<a>` tags to Instagram, overlay text added, Instagram follow button below grid
+- Removed `loading="lazy"` from gallery images so all 6 load immediately
+
+**Bugs found and fixed (all in script block of template literal):**
+1. `'Hi! I'm Connie...'` — apostrophe in single-quoted string → fixed to double quotes
+2. `'We\'ll send you...'` (line 814) — `\'` in template literal renders as `'` in browser → broken string → fixed to double quotes
+3. `'Request received! We\'ll confirm...'` (line 853) — same issue → fixed to double quotes
+- Root cause: JS `\'` escape inside a Node.js template literal outputs bare `'` to browser, not `\'`
+
+**Commits pushed:**
+- `642d1d1` — Phase 5 full rewrite
+- `49e8999` — fix apostrophe + remove lazy loading
+- `e17e879` — fix two more `\'` → `'` broken strings (latest, not yet verified live)
+
+**Decisions made:**
+- Never use `\'` inside a JS template literal that outputs browser JS — always use double-quoted strings for contractions
+- Never use `Write` on bold-dark.js — always `Edit` to stay under 32k token limit
+- `templates/booking-form.js` untouched — still powers `api/book-widget.js` (Phase 3)
+
+### What's NOT Done / Not Verified
+- `heyconnie.co/luis-mobile-detail` not yet confirmed working after commit e17e879
+- Sections (About, Services, Pricing, Trust tiles) not yet visually confirmed — all depend on JS fix landing
+- Phone-first booking form not yet tested end-to-end (415-279-4984 → returning, unknown → new)
+- Chat widget not tested
+- Phase 3: `api/book-widget.js` not yet built
+- Phase 4: admin photo upload + website settings not built
+- Clean Pro template not built
+
+### Next Session: Start Here
+1. Hard-reload `heyconnie.co/luis-mobile-detail` — check browser console for zero JS errors
+2. Scroll through: confirm About, Services, Pricing, Trust tiles, gallery all visible
+3. Test booking form: enter 415-279-4984 → should show returning customer screen
+4. Test chat bubble bottom-right → sends to `/api/chat`
+5. If all good → Phase 3 (`api/book-widget.js`)
+
+---
+
 ## Session 80 — 2026-06-29
 
 ### CURRENT PHASE: Phase 5 — Website Builder (template redesign in progress)
