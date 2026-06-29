@@ -622,6 +622,10 @@ ${galleryHtml}
               <label for="bkNotesReturn">Notes <span class="hf-opt">(optional)</span></label>
               <textarea id="bkNotesReturn" placeholder="Gate code, parking notes, etc."></textarea>
             </div>
+            <div class="hf-consent">
+              <input type="checkbox" id="bkSmsConsentReturn">
+              <p>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy" target="_blank">Privacy Policy</a>.</p>
+            </div>
             <button class="hf-submit" id="bkReturnBtn" type="button">Confirm Booking</button>
             <div class="hf-msg" id="bkReturnMsg"></div>
             <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center"><a href="#" id="bkNotMe" style="color:var(--blue)">Not me? Book as new customer →</a></p>
@@ -674,7 +678,7 @@ ${galleryHtml}
             </div>
             <div class="hf-consent">
               <input type="checkbox" id="bkSmsConsent">
-              <p>I agree to receive SMS updates about my booking. Message &amp; data rates may apply. <a href="/terms">Terms</a></p>
+              <p>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy" target="_blank">Privacy Policy</a>.</p>
             </div>
             <button class="hf-submit" id="bkNewBtn" type="button">Request Appointment</button>
             <div class="hf-msg" id="bkNewMsg"></div>
@@ -866,7 +870,8 @@ ${galleryHtml}
         preferred_date: date,
         preferred_time: slot || '',
         promo_code: document.getElementById('bkPromoReturn').value.trim(),
-        notes: document.getElementById('bkNotesReturn').value.trim()
+        notes: document.getElementById('bkNotesReturn').value.trim(),
+        sms_consent_at: document.getElementById('bkSmsConsentReturn').checked ? new Date().toISOString() : null
       })
     })
     .then(function(r){ return r.json() })
