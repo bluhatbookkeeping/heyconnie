@@ -5,7 +5,55 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
-## Session 78 — 2026-06-28
+## Session 78 — 2026-06-28 (context limit — pick up next session)
+
+### CURRENT PHASE: Phase 5 — Website Builder + Hosted Pages
+### LAST COMPLETED: All 6 build steps. Routing bug hit at end of session — NOT yet verified live.
+### NEXT: Confirm heyconnie.co/luis-mobile-detail renders. Then verify booking form submits. Then admin tab.
+
+---
+
+### What Was Built
+
+**DB Migration** (applied via Supabase MCP — confirmed in DB):
+- `businesses` new columns: `website_template`, `website_enabled`, `facebook_url`, `hero_image_url`, `gallery_image_urls`, `tagline`, `website_custom_domain`
+- `bookings` new column: `sms_consent_at TIMESTAMPTZ`
+- Luis row seeded: `website_enabled = true`, `website_template = 'clean-pro'`, `tagline = 'Mobile Car Detailing in the San Gabriel Valley'`, `instagram` set
+- Migration name: `phase5_website_builder`
+
+**New files created:**
+- `api/b/[slug].js` — One-Pager Express renderer. Queries `businesses` + `services`. Returns full branded HTML. Booking form inline (service dropdown, name/phone/email, address, make/model/year w/ CAR_DATA for 26 makes, date, time chips, notes, promo, SMS consent checkbox). 404 → branded lead-gen page.
+- `api/book-widget.js` — Form-only page at `/book/:slug`. `X-Frame-Options: ALLOWALL`. Same form as above, posts to `https://heyconnie.co/api/book`.
+- `api/admin/update-website.js` — JWT-authenticated (Bearer token via `supabase.auth.getUser`). Accepts: `website_enabled`, `website_template`, `tagline`, `hero_image_url`, `gallery_image_urls`, `instagram`, `facebook_url`. Updates `businesses` table.
+
+**Modified files:**
+- `api/book.js` — Now reads `business_id` from `req.body` (falls back to `'luis-mobile-detail'`). Inserts `sms_consent_at: new Date().toISOString()` when `sms_consent` is true in body.
+- `vercel.json` — Converted from legacy `routes` to `rewrites`. Added `/book/:slug` → `api/book-widget` and `/:slug([a-z0-9][a-z0-9-]*)` → `api/b/:slug`. All 13 crons preserved.
+- `admin/index.html` — Added "My Website" nav button (after Biz Profile). Added `mywebsitePane` with: publish toggle (calls `saveWebsiteToggle()`), live URL + copy button, customize form (tagline, hero image URL + live preview, Instagram, Facebook), embed code textarea + copy. `loadMyWebsite()` added to dashboard init. `mywebsite` added to `TAB_LABELS`.
+
+### Issues Hit
+
+1. **vercel.json routing not working** — `/luis-mobile-detail` was showing `index.html` instead of the business page. Root cause: `/(.*) → /index.html` catch-all rewrite was intercepting all paths, overriding the slug rule. Two failed attempts:
+   - Attempt 1: Negative lookahead regex `(?!api|admin|...)` — Vercel doesn't support lookaheads in rewrite patterns.
+   - Attempt 2: Simplified to `/:slug([a-z0-9][a-z0-9-]*)` but kept `/(.*) → /index.html` — catch-all still won (Vercel serves static file matches before rewrite order is respected).
+   - **Fix applied (not yet verified):** Removed `/(.*) → /index.html` entirely. `index.html` is served at `/` automatically by Vercel. Catch-all was only ever needed for SPAs — heyconnie.co is a static page. Pushed as commit `e1ffafe`.
+
+### What's NOT Yet Verified
+- `heyconnie.co/luis-mobile-detail` renders (fix was pushed at end of session, unconfirmed)
+- Booking form submits and `sms_consent_at` is populated
+- `heyconnie.co/book/luis-mobile-detail` loads
+- `heyconnie.co/nonexistent` shows branded 404
+- Admin "My Website" tab loads and saves correctly
+
+### Next Session: Start Here
+1. Confirm `heyconnie.co/luis-mobile-detail` renders with Luis's name and services
+2. Submit a test booking — check Supabase `bookings` for new row with `sms_consent_at` set
+3. Test `heyconnie.co/book/luis-mobile-detail` in an iframe
+4. Open admin → My Website tab — verify toggle and save work
+5. If all green: build remaining 4 templates (Clean Pro, Bold & Dark, Local Trust, Gallery First)
+6. Update CLAUDE.md to reflect Phase 5 complete
+
+---
 
 ### CURRENT PHASE: Phase 5 — Website Builder + Hosted Pages ✅ (Steps 1–6)
 ### LAST COMPLETED: All 6 build steps
