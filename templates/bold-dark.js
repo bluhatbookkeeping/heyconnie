@@ -583,7 +583,7 @@ ${galleryHtml}
       </div>
       <div class="form-box" id="bookingBox">
         <!-- Screen: phone lookup -->
-        <div id="scrPhone" style="text-align:center">
+        <div id="scrPhone" style="text-align:center;max-width:380px;margin:0 auto">
           <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:6px">Book Your Detail</h3>
           <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Enter your phone number to get started.<br>Booked with us before? We'll pull up your details.</p>
           <div class="hc-form">
