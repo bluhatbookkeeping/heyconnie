@@ -77,7 +77,7 @@ function renderBoldDark({ business, services }) {
     : ''
 
   const galleryHtml = gallery.length ? `
-  <section class="section section--gray" id="gallery">
+  <section class="section" id="gallery">
     <div class="container" style="text-align:center">
       <p class="label">See Our Work</p>
       <h2 class="h2">Real Cars. Real Results.</h2>
