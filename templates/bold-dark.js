@@ -68,7 +68,7 @@ function renderBoldDark({ business, services }) {
             : `<div class="ig-cell">${inner}</div>`
         }).join('')}
       </div>
-      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-outline btn-lg">Follow @${escHtml(igHandle)} on Instagram</a></div>` : ''}
+      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">View Instagram &rarr; @${escHtml(igHandle)}</a></div>` : ''}
     </div>
   </section>` : ''
 
@@ -517,10 +517,18 @@ ${svcs.length ? `
     <p class="label fu" style="text-align:center">Why Choose Us</p>
     <h2 class="h2 fu" style="text-align:center">What You Can Expect</h2>
     <div class="trust-grid">
-      ${['💧 100% Hand Wash — Every Time','🚗 Mobile Service — We Come to You','✨ Interior and Exterior Detailing','💎 Wax &amp; Polish Available','🔧 Engine Bay Shampoo Available','🪣 Rug &amp; Carpet Shampoo Available','📍 Local Pasadena &amp; San Gabriel Valley','📅 Call or Request Online Anytime'].map((t, i) => {
-        const [icon, ...words] = t.split(' ')
-        return `<div class="trust-tile fu" style="transition-delay:${i * 0.05}s"><div class="trust-tile-icon">${icon}</div><div class="trust-tile-text">${words.join(' ')}</div></div>`
-      }).join('')}
+      ${[
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>`, text:'100% Hand Wash — Every Time'},
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z"/><path d="M15 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>`, text:'Mobile Service — We Come to You'},
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h2M11 15h6"/></svg>`, text:'Interior and Exterior Detailing'},
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"/></svg>`, text:'Wax &amp; Polish Available'},
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>`, text:'Engine Bay Shampoo Available'},
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16a4 4 0 0 1-.88-7.903A5 5 0 1 1 15.9 6L16 6a5 5 0 0 1 1 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>`, text:'Rug &amp; Carpet Shampoo Available'},
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.447-2.724A1 1 0 0 1 3 16.382V5.618a1 1 0 0 1 1.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0 0 21 18.382V7.618a1 1 0 0 0-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>`, text:'Local Pasadena &amp; San Gabriel Valley'},
+        {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`, text:'Call or Request Online Anytime'}
+      ].map(({svg, text}, i) =>
+        `<div class="trust-tile fu" style="transition-delay:${i * 0.05}s"><div class="trust-tile-icon">${svg}</div><div class="trust-tile-text">${text}</div></div>`
+      ).join('')}
     </div>
   </div>
 </section>
@@ -544,13 +552,13 @@ ${galleryHtml}
       </div>
       <div class="form-box" id="bookingBox">
         <!-- Screen: phone lookup -->
-        <div id="scrPhone">
+        <div id="scrPhone" style="text-align:center">
           <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:6px">Book Your Detail</h3>
           <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Enter your phone number to get started.<br>Booked with us before? We'll pull up your details.</p>
           <div class="hc-form">
             <div class="hf-group">
-              <label for="bkPhone">Phone Number</label>
-              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" autocomplete="tel">
+              <label for="bkPhone" style="text-align:left">Phone Number</label>
+              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" autocomplete="tel" style="text-align:center">
             </div>
             <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
             <div class="hf-msg" id="bkPhoneMsg"></div>
