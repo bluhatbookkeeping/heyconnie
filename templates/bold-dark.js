@@ -501,7 +501,7 @@ function renderBoldDark({ business, services }) {
 
 <!-- SERVICES -->
 ${svcs.length ? `
-<section class="section section--gray" id="services">
+<section class="section" id="services">
   <div class="container">
     <p class="label">What We Offer</p>
     <h2 class="h2">Our Service Packages</h2>
