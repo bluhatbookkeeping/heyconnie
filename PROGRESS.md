@@ -5,11 +5,67 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
-## Session 82 — 2026-06-29 (continued)
+## Session 83 — 2026-06-29 (continued)
 
-### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match to luis-mobile-detailing.vercel.app
-### LAST COMPLETED: Nav, About, Services, Pricing, Trust tiles, Booking section all fixed and deployed
-### NEXT: Full side-by-side visual QA pass; then Phase 3 (api/book-widget.js)
+### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match + A2P SMS compliance
+### LAST COMPLETED: All section backgrounds fixed, chat widget fixed, SMS consent added, Terms/Privacy pages live
+### NEXT: Verify /terms and /privacy resolve correctly (routing fix just deployed); then Phase 3 (api/book-widget.js)
+
+---
+
+### What Was Done
+
+**`templates/bold-dark.js` — pixel-perfect fixes (all deployed):**
+- Booking section phone format: `${phoneFmt}` → `☎ ${phoneNav}` (dash format + icon) in blue "Prefer to Call?" card
+- "Phone Number" label: `text-align:left` → `text-align:center`
+- "Or call us" phone: `${phoneFmt}` → `${phoneNav}` (dash format)
+- Gallery section: centered all header text, added description paragraph (`Follow ${bizName} on Instagram...`), linked `@handle` to Instagram, changed button text `→` → `—`
+- Gallery background: `section--gray` → `section` (white)
+- Services section: `section--gray` → `section--gray` (toggled white then back to gray per Andrew)
+- Pricing section: `section--gray` → `section` (white)
+- Trust tiles section: `section` → `section--gray`
+- Chat widget: moved `<button id="chatBubble">` and `<div id="chatPanel">` HTML to BEFORE `<script>` tag — was after, so IIFE ran with both elements null and no listeners ever attached
+
+**SMS consent (A2P compliant) — `templates/bold-dark.js`:**
+- Added consent checkbox to `scrPhone` (phone entry screen) with `id="bkSmsConsentPhone"`
+- Added `smsConsentAt` global var; set on "Get Started" click if checkbox checked
+- Updated new customer form consent text (`id="bkSmsConsent"`) to full A2P language
+- Added consent checkbox to returning customer form (`id="bkSmsConsentReturn"`) before "Confirm Booking"
+- Both form submits use `smsConsentAt` as fallback if their own checkbox unchecked
+- Consent text: "Hey Connie... Reply HELP/STOP... Consent not required to book"
+- Links to `heyconnie.co/terms` and `heyconnie.co/privacy`
+
+**New files — Terms & Privacy pages:**
+- `terms.html` — Terms of Service, Blu Hat Funding LLC operating as Hey Connie
+- `privacy.html` — Privacy Policy, same entity
+- Both follow ReadyToRent model (that got Twilio A2P approval)
+- Both include: A2P SMS disclosures, message types list, STOP/HELP opt-out, Twilio named as provider, phone numbers not sold
+- Both have "← Back to your detailer" bar (`history.back()`) so user returns to whatever detailer page they came from
+- Generic — covers all detailers on the platform
+
+**`vercel.json` routing fixes:**
+- Added `"cleanUrls": true` — serves `terms.html` at `/terms`, `privacy.html` at `/privacy`
+- Removed explicit `/terms` and `/privacy` rewrites (cleanUrls handles them)
+- Tightened slug regex: `[a-z0-9][a-z0-9-]*` → `[a-z0-9][a-z0-9]*-[a-z0-9-]+` (requires hyphen)
+  - All business slugs have hyphens (`luis-mobile-detail`) — still match
+  - Reserved words (`terms`, `privacy`, `cancel`, `admin`) don't have hyphens — never match slug route
+
+### Decisions Made
+- **A2P campaign architecture:** Use one Hey Connie campaign for now (generic branding). Per-detailer subaccounts TBD.
+- **Legal entity:** "Blu Hat Funding LLC, operating as Hey Connie" (mirrors ReadyToRent setup)
+- **SMS consent:** Optional (not required to book) — checkbox on all three booking screens
+- **Background pattern (final):** Services = gray, Pricing = white, Trust tiles = gray, Gallery = white, Booking = gray
+
+### Issues Hit
+- Chat widget broken: HTML was placed AFTER `</script>`, so `getElementById` returned null during IIFE execution. Fixed by moving HTML before script.
+- `/terms` 404: slug catch-all regex matched "terms" even with specific rewrites listed first. Fixed with cleanUrls + hyphen-required slug regex.
+- Git push auth failure mid-session: fixed with `gh auth setup-git`.
+
+### What's NOT Verified Yet
+- `/terms` and `/privacy` live routing (routing fix just deployed — confirm in browser)
+- Chat widget functioning end-to-end (sends message to `/api/chat`, gets reply)
+- Booking form end-to-end (phone lookup → returning/new → submit → `sms_consent_at` in Supabase)
+- `support@heyconnie.co` email inbox (referenced in Terms/Privacy — needs to exist before A2P submission)
 
 ---
 
