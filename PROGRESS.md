@@ -5,6 +5,93 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
+## Session 80 — 2026-06-29
+
+### CURRENT PHASE: Phase 5 — Website Builder (template redesign in progress)
+### LAST COMPLETED: Bold & Dark template rewritten to match Luis's site; images seeded; DB migration complete
+### NEXT: Fine-tune Bold & Dark template until it visually matches luis-mobile-detailing.vercel.app exactly, then continue Phase 3 (booking widget)
+
+---
+
+### What Was Done
+
+**Phase 1 — DB Migration (completed):**
+- Added missing `domain_status TEXT` column to `businesses`
+- Fixed `website_template` default from `'one-pager'` → `'bold-dark'`
+- Seeded Luis: `website_template='bold-dark'`, `website_enabled=true`, `tagline`, `instagram` set
+- Created `business-photos` Supabase Storage bucket (public read)
+- Fixed Luis's phone in DB: corrected from Andrew's test number to `626-409-3147`
+
+**Phase 2 — Template Module System (completed):**
+- Created `templates/booking-form.js` — shared form renderer with CAR_DATA, cascading make/model, SMS consent, `sms_consent_at` on submit
+- Created `templates/bold-dark.js` — full rewrite matching Luis's site: Barlow Condensed + DM Sans, sticky nav, hero with pulsing badge, blue trust bar, service cards with Most Popular auto-badge, gallery grid, two-column booking form, CTA section, dark footer
+- Updated `api/b/[slug].js` — imports templates, routes by `website_template`
+
+**Images seeded:**
+- Uploaded all 12 of Luis's photos to Supabase Storage (`business-photos/luis-mobile-detail/IMG_9945–9956.PNG`)
+- `hero_image_url` = IMG_9953.PNG (same as his existing site hero)
+- `gallery_image_urls` = 6 photos (IMG_9945–9950)
+
+**Live URL confirmed:** `heyconnie.co/luis-mobile-detail` renders Bold & Dark template with Luis's data and photos
+
+### What's NOT Done
+- Bold & Dark template not yet pixel-close to `luis-mobile-detailing.vercel.app` — needs visual fine-tuning next session
+- Phase 3: `api/book-widget.js` (iframe booking widget) not yet built
+- Phase 4: `api/admin/upload-photo.js` + `api/admin/website-settings.js` not yet built
+- Phase 5: Admin "My Website" tab photo upload slots not yet built
+- Phase 6: Clean Pro template + auto-enable on signup not yet built
+
+### Next Session: Start Here
+1. Open both URLs side by side: `heyconnie.co/luis-mobile-detail` vs `luis-mobile-detailing.vercel.app`
+2. Identify specific visual gaps and fix `templates/bold-dark.js` until they match
+3. Then proceed to Phase 3 prompt from `website-builder-implementation-plan.md`
+
+---
+
+## Session 79 — 2026-06-29
+
+### CURRENT PHASE: Phase 5 — Website Builder (planning + roadmap)
+### LAST COMPLETED: Planning session — implementation plan + agent prompts written
+### NEXT: Start Phase 5 implementation — begin with verification of Session 78's unconfirmed routing fix, then build remaining templates
+
+---
+
+### What Was Done
+
+**Planning only — no code changes.**
+
+**Reviewed** `Roadmap/website-builder-feature-spec.md` — confirmed architecture is solid.
+
+**Key decisions made:**
+- Templates cut from 5 → 2 to start: **Bold & Dark** (Luis's aesthetic) + **Clean Pro** (minimal/white). More added after first detailer feedback.
+- **Photo uploads** via Supabase Storage (not URL paste). Each slot is a file input → uploads to `business-photos/{business_id}/{slot}.jpg` → public URL stored in `gallery_image_urls`.
+- Instagram: display link only, no API import.
+- Booking APIs stay on per-tenant base_url for now.
+- Auto-enable website on signup (`website_enabled = true`, `website_template = 'bold-dark'` set by `detailer-signup.js`).
+- Pricing source: `services` table only.
+
+**New files created (planning docs):**
+- `website-builder-implementation-plan.md` (root) — 6-phase breakdown with copy-paste agent prompts for each phase + session-ending prompt
+- `Roadmap/custom-domain-feature-spec.md` — full spec for custom domain add-on (Vercel API integration, domain masking, paid add-on pricing). Parked — build after website builder is live.
+
+**Moved from Luis Mobile Detail → heyconnie:**
+- All active build work now lives in this project. Luis Mobile Detail project stays as reference for `index.html` design only.
+
+### What's NOT Done
+- Session 78's routing fix (`heyconnie.co/luis-mobile-detail`) not yet confirmed live
+- Photo upload endpoint (`api/admin/upload-photo.js`) — not built yet
+- Bold & Dark template — not built (only One-Pager Express exists)
+- Clean Pro template — not built
+- Admin "My Website" tab needs photo upload slots (currently has URL inputs per spec, needs to change to file inputs)
+
+### Next Session: Start Here
+1. Confirm `heyconnie.co/luis-mobile-detail` renders (Session 78 routing fix)
+2. Then hand off `website-builder-implementation-plan.md` Phase 4 prompt to build photo upload + settings API
+3. Then Phase 5 prompt for admin panel photo upload slots
+4. Then Phase 6 for Bold & Dark template + auto-enable on signup
+
+---
+
 ## Session 78 — 2026-06-28 (context limit — pick up next session)
 
 ### CURRENT PHASE: Phase 5 — Website Builder + Hosted Pages
