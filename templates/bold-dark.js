@@ -62,7 +62,7 @@ function renderBoldDark({ business, services }) {
       ${igHandle ? `<p class="ig-handle">@${escHtml(igHandle)}</p>` : ''}
       <div class="ig-grid">
         ${gallery.map(url => {
-          const inner = `<img src="${escHtml(url)}" alt="Detail work" loading="lazy"><div class="ig-overlay"><span class="ig-overlay-txt">View on Instagram</span></div>`
+          const inner = `<img src="${escHtml(url)}" alt="Detail work"><div class="ig-overlay"><span class="ig-overlay-txt">View on Instagram</span></div>`
           return instagram
             ? `<a class="ig-cell" href="${escHtml(instagram)}" target="_blank" rel="noopener">${inner}</a>`
             : `<div class="ig-cell">${inner}</div>`
@@ -881,7 +881,7 @@ ${galleryHtml}
     chatOpen = !chatOpen
     panel.classList.toggle('open', chatOpen)
     if (chatOpen && !chatMessages.children.length) {
-      addMsg('Hi! I’m Connie. How can I help you today?', 'agent')
+      addMsg("Hi! I’m Connie. How can I help you today?", ‘agent’)
     }
     if (chatOpen && chatInput) chatInput.focus()
   })
