@@ -811,7 +811,7 @@ ${galleryHtml}
     .then(function(d){
       retBtn.disabled=false; retBtn.textContent='Confirm Booking'
       if (d.success || d.booking_id) {
-        document.getElementById('bkSuccessMsg').textContent = 'We\'ll send you a confirmation shortly. See you on '+date+'!'
+        document.getElementById('bkSuccessMsg').textContent = "We'll send you a confirmation shortly. See you on " + date + "!"
         show('scrSuccess')
       } else {
         msg('bkReturnMsg', d.error || 'Something went wrong. Please try again.', true)
@@ -850,7 +850,7 @@ ${galleryHtml}
     .then(function(d){
       newBtn.disabled=false; newBtn.textContent='Request Appointment'
       if (d.success || d.booking_id) {
-        document.getElementById('bkSuccessMsg').textContent = 'Request received! We\'ll confirm your '+date+' appointment shortly.'
+        document.getElementById('bkSuccessMsg').textContent = "Request received! We'll confirm your " + date + " appointment shortly."
         show('scrSuccess')
       } else {
         msg('bkNewMsg', d.error || 'Something went wrong. Please try again.', true)
