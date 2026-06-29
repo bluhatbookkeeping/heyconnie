@@ -55,7 +55,7 @@ function renderBoldDark({ business, services }) {
     : ''
 
   const galleryHtml = gallery.length ? `
-  <section class="section section--dark" id="gallery">
+  <section class="section section--gray" id="gallery">
     <div class="container">
       <p class="label">See Our Work</p>
       <h2 class="h2">Real Cars. Real Results.</h2>
@@ -68,7 +68,7 @@ function renderBoldDark({ business, services }) {
             : `<div class="ig-cell">${inner}</div>`
         }).join('')}
       </div>
-      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-outline-white btn-lg">Follow @${escHtml(igHandle)} on Instagram</a></div>` : ''}
+      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-outline btn-lg">Follow @${escHtml(igHandle)} on Instagram</a></div>` : ''}
     </div>
   </section>` : ''
 
@@ -198,14 +198,14 @@ function renderBoldDark({ business, services }) {
     .ig-cell:hover img{transform:scale(1.05)}
     .ig-cell .ig-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:opacity .25s}
     .ig-cell:hover .ig-overlay{opacity:1}
-    .ig-handle{font-size:16px;font-weight:600;margin-top:8px;color:rgba(255,255,255,.7)}
-    .ig-handle a,.ig-handle span{color:#60a5fa}
+    .ig-handle{font-size:16px;font-weight:600;margin-top:8px;color:var(--muted)}
+    .ig-handle a,.ig-handle span{color:var(--blue)}
 
     /* Booking section */
-    .booking-section{padding:80px 0;background:var(--bg-dark)}
-    .booking-section .label{color:rgba(255,255,255,.6)}
-    .booking-section .h2{color:#fff}
-    .booking-section .desc{color:rgba(255,255,255,.65)}
+    .booking-section{padding:80px 0;background:var(--bg-gray)}
+    .booking-section .label{color:var(--blue)}
+    .booking-section .h2{color:var(--text)}
+    .booking-section .desc{color:var(--muted)}
     .form-wrap{display:grid;grid-template-columns:1fr 1.5fr;gap:60px;align-items:start;margin-top:40px}
     .form-contact-box{background:var(--blue);border-radius:var(--rl);padding:26px;color:#fff}
     .form-contact-box h4{font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:8px}
@@ -460,12 +460,12 @@ function renderBoldDark({ business, services }) {
       <div>
         <p class="label fu">About Us</p>
         <h2 class="h2 fu">Detailing Done Right,<br>Right at Your Door</h2>
-        <p class="desc fu">We're a mobile detailing team serving the ${serviceArea || 'San Gabriel Valley'}. Every job is hand-done — no shortcuts, no rushing. We take pride in every car we touch.</p>
+        <p class="desc fu">Luis Mobile Detail brings professional car detailing directly to your home, office, or location. From a quick wash to a full interior and exterior detail, Luis takes pride in doing the job by hand and making every vehicle look its best. Based in Pasadena, we serve the entire San Gabriel Valley and surrounding Los Angeles area. No need to take your car anywhere — just schedule a time and we'll handle the rest.</p>
         <div class="about-stats">
-          <div class="about-stat fu"><div class="about-stat-num">200+</div><div class="about-stat-lbl">Cars Detailed</div></div>
-          <div class="about-stat fu"><div class="about-stat-num">5 ★</div><div class="about-stat-lbl">Average Rating</div></div>
-          <div class="about-stat fu"><div class="about-stat-num">5+</div><div class="about-stat-lbl">Years Experience</div></div>
-          <div class="about-stat fu"><div class="about-stat-num">100%</div><div class="about-stat-lbl">Satisfaction</div></div>
+          <div class="about-stat fu"><div class="about-stat-num">100%</div><div class="about-stat-lbl">Hand wash, every time</div></div>
+          <div class="about-stat fu"><div class="about-stat-num">SGV</div><div class="about-stat-lbl">Local Pasadena based</div></div>
+          <div class="about-stat fu"><div class="about-stat-num">3</div><div class="about-stat-lbl">Service packages</div></div>
+          <div class="about-stat fu"><div class="about-stat-num">On-Site</div><div class="about-stat-lbl">We come to your location</div></div>
         </div>
       </div>
       <div class="about-img fu">
@@ -507,7 +507,7 @@ ${svcs.length ? `
         </div>`
       }).join('')}
     </div>
-    <p class="price-disclaimer">⚠️ Prices shown are starting rates for a standard sedan. SUVs, trucks, and oversized vehicles may be quoted higher. Final price confirmed before we begin.</p>
+    <p class="price-disclaimer">⚠️ Larger vehicles, heavy dirt, pet hair, stains, or extra polishing may cost more. All prices are confirmed before any work begins.</p>
   </div>
 </section>` : ''}
 
@@ -517,7 +517,7 @@ ${svcs.length ? `
     <p class="label fu" style="text-align:center">Why Choose Us</p>
     <h2 class="h2 fu" style="text-align:center">What You Can Expect</h2>
     <div class="trust-grid">
-      ${['⭐ 5-Star Rated Service','🚗 We Come to You','💧 100% Hand Wash','🏆 Detail-Obsessed Team','📍 Local &amp; Reliable','🪣 Eco-Friendly Products','⚡ Fast Turnaround','🔒 Satisfaction Guaranteed'].map((t, i) => {
+      ${['💧 100% Hand Wash — Every Time','🚗 Mobile Service — We Come to You','✨ Interior and Exterior Detailing','💎 Wax &amp; Polish Available','🔧 Engine Bay Shampoo Available','🪣 Rug &amp; Carpet Shampoo Available','📍 Local Pasadena &amp; San Gabriel Valley','📅 Call or Request Online Anytime'].map((t, i) => {
         const [icon, ...words] = t.split(' ')
         return `<div class="trust-tile fu" style="transition-delay:${i * 0.05}s"><div class="trust-tile-icon">${icon}</div><div class="trust-tile-text">${words.join(' ')}</div></div>`
       }).join('')}
