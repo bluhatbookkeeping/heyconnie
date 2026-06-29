@@ -515,8 +515,8 @@ ${svcs.length ? `
 <section class="section section--gray">
   <div class="container">
     <p class="label fu">Pricing</p>
-    <h2 class="h2 fu">Simple, Transparent Pricing</h2>
-    <p class="desc fu">All services include exterior wash, tire shine, and window clean. Prices vary by vehicle size.</p>
+    <h2 class="h2 fu">Simple, Honest Pricing</h2>
+    <p class="desc fu">Pricing depends on vehicle size, condition, and service requested.<br>Submit the form below or call Luis for an exact quote.</p>
     <div class="pricing-grid">
       ${svcs.map((s, i) => {
         const isFeatured = svcs.length > 1 && i === midIndex
@@ -524,19 +524,26 @@ ${svcs.length ? `
         <div class="price-card${isFeatured ? ' featured' : ''} fu">
           <div class="price-name">${escHtml(s.name)}</div>
           <div class="price-amt">$${Number(s.starting_price).toFixed(0)}</div>
-          <div class="price-note">Starting price</div>
+          <div class="price-note">Starting price &mdash; call for exact quote</div>
           <a href="#book" class="btn ${isFeatured ? 'btn-primary' : 'btn-outline'} btn-full">Book This</a>
         </div>`
       }).join('')}
     </div>
-    <p class="price-disclaimer">⚠️ Larger vehicles, heavy dirt, pet hair, stains, or extra polishing may cost more. All prices are confirmed before any work begins.</p>
+    <p class="price-disclaimer"><strong>Note:</strong> Larger vehicles, heavy dirt, pet hair, stains, or extra polishing may cost more. All prices are confirmed before any work begins. Call Luis at <a href="tel:${phoneBare}" style="font-weight:700;color:inherit">${phoneFmt}</a> or fill out the form below for a fast quote.</p>
+    <div style="text-align:center;margin-top:36px">
+      <p style="font-size:16px;color:var(--muted);margin-bottom:18px">Ready to get a quote for your vehicle?</p>
+      <div class="btn-group" style="justify-content:center">
+        <a href="tel:${phoneBare}" class="btn btn-primary">Call for a Quote</a>
+        <a href="#book" class="btn btn-outline">Request Appointment Online</a>
+      </div>
+    </div>
   </div>
 </section>` : ''}
 
 <!-- TRUST TILES -->
 <section class="section">
   <div class="container">
-    <p class="label fu" style="text-align:center">Why Choose Us</p>
+    <p class="label fu" style="text-align:center">Why Choose Luis</p>
     <h2 class="h2 fu" style="text-align:center">What You Can Expect</h2>
     <div class="trust-grid">
       ${[

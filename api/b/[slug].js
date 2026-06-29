@@ -57,7 +57,7 @@ module.exports = async function handler(req, res) {
 
   const { data: services } = await supabase
     .from('services')
-    .select('name,starting_price,duration_minutes,description')
+    .select('name,starting_price,duration_minutes')
     .eq('business_id', slug)
     .order('starting_price', { ascending: true })
 
