@@ -514,7 +514,7 @@ ${svcs.length ? `
 
 <!-- PRICING -->
 ${svcs.length ? `
-<section class="section section--gray" id="pricing">
+<section class="section" id="pricing">
   <div class="container">
     <p class="label fu">Pricing</p>
     <h2 class="h2 fu">Simple, Honest Pricing</h2>
