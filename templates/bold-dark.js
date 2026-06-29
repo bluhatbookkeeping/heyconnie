@@ -24,6 +24,7 @@ function renderBoldDark({ business, services }) {
   const phone      = biz.phone || ''
   const phoneFmt   = formatPhone(phone)
   const phoneBare  = formatPhoneBare(phone)
+  const phoneNav   = phoneBare.length === 10 ? `${phoneBare.slice(0,3)}-${phoneBare.slice(3,6)}-${phoneBare.slice(6)}` : phoneFmt
   const instagram  = biz.instagram || ''
   const facebook   = biz.facebook_url || ''
   const slug       = biz.id
@@ -403,16 +404,17 @@ function renderBoldDark({ business, services }) {
     <div class="nav-inner">
       <a href="#top" class="nav-logo">
         ${bizName}
-        ${serviceArea ? `<small>Mobile Car Detailing &middot; ${escHtml(serviceArea)}</small>` : '<small>Mobile Car Detailing</small>'}
+        <small>Mobile Car Detailing &middot; ${escHtml(serviceArea ? serviceArea.split(',')[0].trim() : 'Pasadena')}</small>
       </a>
       <ul class="nav-links">
         <li><a href="#services">Services</a></li>
-        ${gallery.length ? '<li><a href="#gallery">Our Work</a></li>' : ''}
+        <li><a href="#pricing">Pricing</a></li>
         <li><a href="#book">Book Appointment</a></li>
         ${instagram ? `<li><a href="${escHtml(instagram)}" target="_blank" rel="noopener">Instagram</a></li>` : ''}
+        <li><a href="#book">Contact</a></li>
       </ul>
       <div class="nav-right">
-        ${phone ? `<a href="tel:${phoneBare}" class="nav-phone">${phoneFmt}</a>` : ''}
+        ${phone ? `<a href="tel:${phoneBare}" class="nav-phone">${phoneNav}</a>` : ''}
         <a href="#book" class="btn btn-primary" style="padding:10px 18px;font-size:14px">Book Now</a>
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Menu">
@@ -512,7 +514,7 @@ ${svcs.length ? `
 
 <!-- PRICING -->
 ${svcs.length ? `
-<section class="section section--gray">
+<section class="section section--gray" id="pricing">
   <div class="container">
     <p class="label fu">Pricing</p>
     <h2 class="h2 fu">Simple, Honest Pricing</h2>
