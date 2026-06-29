@@ -34,17 +34,37 @@ function renderBoldDark({ business, services }) {
   const svcs = services || []
   const midIndex = Math.floor((svcs.length - 1) / 2)
 
+  const SVC_DETAILS = {
+    'Just a Wash': {
+      desc: 'Best for customers who want a clean exterior without the full detail.',
+      items: ['100% hand wash','Exterior rinse and foam wash','Wheel and tire cleaning','Hand dry','Tire shine','Light exterior wipe-down']
+    },
+    'Standard Detail': {
+      desc: 'Best for regular maintenance and a deeper clean inside and out.',
+      items: ['Everything in Just a Wash','Interior vacuum','Wipe down dashboard, doors & console','Window cleaning','Light interior cleaning','Wheel and tire detail','Exterior hand wash']
+    },
+    'Full Detail': {
+      desc: 'Best for a deep clean inside and out. The complete package.',
+      items: ['Everything in Standard Detail','Wax','Polish','Engine bay shampoo','Rug and carpet shampoo','Deep interior cleaning','Seat and floor cleaning','Door jamb cleaning','Detailed wheel cleaning','Full interior & exterior refresh']
+    }
+  }
+
   const serviceCards = svcs.map((s, i) => {
     const isFeatured = svcs.length > 1 && i === midIndex
     const icon = SVC_ICONS[i % SVC_ICONS.length]
+    const details = SVC_DETAILS[s.name] || {}
+    const desc = details.desc || s.description || ''
+    const items = details.items || []
+    const checkList = items.length ? `<ul class="svc-list">${items.map(it => `<li><span class="ck">✓</span>${escHtml(it)}</li>`).join('')}</ul>` : ''
     return `
       <div class="svc-card${isFeatured ? ' featured' : ''}">
         ${isFeatured ? '<div class="svc-badge">Most Popular</div>' : ''}
         <div class="svc-icon">${icon}</div>
         <div class="svc-name">${escHtml(s.name)}</div>
         <div class="svc-price">Starting at $${Number(s.starting_price).toFixed(0)}</div>
-        ${s.description ? `<div class="svc-desc">${escHtml(s.description)}</div>` : ''}
-        <div style="margin-top:22px">
+        ${desc ? `<div class="svc-desc">${escHtml(desc)}</div>` : ''}
+        ${checkList}
+        <div style="margin-top:auto;padding-top:22px">
           <a href="#book" class="btn ${isFeatured ? 'btn-primary' : 'btn-outline'} btn-full">Request This Service</a>
         </div>
       </div>`
@@ -182,7 +202,7 @@ function renderBoldDark({ business, services }) {
 
     /* Services */
     .services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:48px}
-    .svc-card{background:#fff;border:1px solid var(--border);border-radius:var(--rl);padding:30px;position:relative;transition:box-shadow .25s,transform .25s}
+    .svc-card{background:#fff;border:1px solid var(--border);border-radius:var(--rl);padding:30px;position:relative;transition:box-shadow .25s,transform .25s;display:flex;flex-direction:column}
     .svc-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px)}
     .svc-card.featured{border-color:var(--blue);border-width:2px}
     .svc-badge{position:absolute;top:-12px;left:28px;background:var(--blue);color:#fff;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:100px}
@@ -481,7 +501,7 @@ ${svcs.length ? `
   <div class="container">
     <p class="label">What We Offer</p>
     <h2 class="h2">Our Service Packages</h2>
-    <p class="desc">Choose the package that fits your vehicle and budget. Not sure? Give us a call and we'll help you decide.</p>
+    <p class="desc">Choose the package that fits your vehicle and budget. Not sure? Call Luis and he'll help you decide.</p>
     <div class="services-grid">
       ${serviceCards}
     </div>
