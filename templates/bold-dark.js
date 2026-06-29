@@ -593,6 +593,10 @@ ${galleryHtml}
             </div>
             <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
             <div class="hf-msg" id="bkPhoneMsg"></div>
+            <div class="hf-consent" style="margin-top:14px;text-align:left">
+              <input type="checkbox" id="bkSmsConsentPhone">
+              <p>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy" target="_blank">Privacy Policy</a>.</p>
+            </div>
             ${phone ? `<p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneNav}</a></p>` : ''}
           </div>
         </div>
@@ -795,6 +799,7 @@ ${galleryHtml}
   // --- Booking form ---
   var phoneVal = ''
   var customerData = null
+  var smsConsentAt = null
 
   function show(id){ ['scrPhone','scrReturning','scrNew','scrSuccess'].forEach(function(s){ document.getElementById(s).style.display = s===id?'':'none' }) }
   function msg(id, text, isErr){ var el=document.getElementById(id); el.textContent=text; el.className='hf-msg '+(isErr?'hf-error':'hf-success') }
@@ -805,6 +810,7 @@ ${galleryHtml}
     var raw = document.getElementById('bkPhone').value.replace(/\D/g,'')
     if (raw.length < 10) { msg('bkPhoneMsg','Please enter a valid phone number.',true); return }
     phoneVal = raw
+    if (document.getElementById('bkSmsConsentPhone').checked) smsConsentAt = new Date().toISOString()
     phoneBtn.disabled = true; phoneBtn.textContent = 'Looking up…'
     fetch(API_BASE+'/api/lookup-customer?phone='+raw+'&business='+SLUG)
       .then(function(r){ return r.json() })
@@ -871,7 +877,7 @@ ${galleryHtml}
         preferred_time: slot || '',
         promo_code: document.getElementById('bkPromoReturn').value.trim(),
         notes: document.getElementById('bkNotesReturn').value.trim(),
-        sms_consent_at: document.getElementById('bkSmsConsentReturn').checked ? new Date().toISOString() : null
+        sms_consent_at: document.getElementById('bkSmsConsentReturn').checked ? new Date().toISOString() : smsConsentAt
       })
     })
     .then(function(r){ return r.json() })
@@ -910,7 +916,7 @@ ${galleryHtml}
         preferred_time: document.getElementById('bkTime').value,
         promo_code: document.getElementById('bkPromoNew').value.trim(),
         notes: document.getElementById('bkNotesNew').value.trim(),
-        sms_consent_at: consent ? new Date().toISOString() : null
+        sms_consent_at: consent ? new Date().toISOString() : smsConsentAt
       })
     })
     .then(function(r){ return r.json() })
