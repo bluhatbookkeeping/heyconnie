@@ -1,10 +1,8 @@
 {
+  "cleanUrls": true,
   "rewrites": [
-    { "source": "/cancel",             "destination": "/cancel.html" },
-    { "source": "/terms",              "destination": "/terms.html" },
-    { "source": "/privacy",           "destination": "/privacy.html" },
     { "source": "/book/:slug",         "destination": "/api/book-widget?slug=:slug" },
-    { "source": "/:slug([a-z0-9][a-z0-9-]*)", "destination": "/api/b/:slug" }
+    { "source": "/:slug([a-z0-9][a-z0-9]*-[a-z0-9-]+)", "destination": "/api/b/:slug" }
   ],
   "crons": [
     { "path": "/api/cron/complete-bookings",    "schedule": "0 13 * * *"   },
