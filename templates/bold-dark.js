@@ -807,7 +807,7 @@ ${galleryHtml}
               <input type="hidden" id="aStartDatetime" value="">
 
               <!-- Promo (collapsed) -->
-              <button type="button" class="collapse-link" onclick="toggleCollapse('aPromoWrap',this)" style="margin-top:12px">
+              <button type="button" id="aPromoToggleBtn" class="collapse-link" onclick="toggleCollapse('aPromoWrap',this)" style="margin-top:12px">
                 <span>+ Have a promo code?</span>
               </button>
               <div id="aPromoWrap" style="display:none;margin-top:10px">
@@ -1289,7 +1289,7 @@ ${galleryHtml}
           '<div style="font-family:monospace;font-size:17px;font-weight:700;color:#7c3aed;letter-spacing:2px;margin-top:4px">' + rc.code + '</div>' +
         '</div>' +
         '<button type="button" id="aApplyRewardBtn" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;white-space:nowrap;font-size:14px">Apply Reward</button>';
-      var promoToggle = document.querySelector('[onclick="toggleCollapse(\'aPromoWrap\',this)"]');
+      var promoToggle = document.getElementById('aPromoToggleBtn');
       if (promoToggle) promoToggle.parentNode.insertBefore(banner, promoToggle);
       document.getElementById('aApplyRewardBtn').addEventListener('click', function() {
         document.getElementById('aPromoCode').value = rc.code;
@@ -1701,7 +1701,7 @@ ${galleryHtml}
         rows += '<div style="font-size:13px;color:#555;margin-top:4px">Final price may vary by vehicle size and condition.</div>';
         paymentEl.style.display = '';
       } else {
-        rows += '<div style="font-size:13px;color:#555">' + payload.service + ' — we\'ll confirm pricing when we reach out.</div>';
+        rows += "<div style=\"font-size:13px;color:#555\">" + payload.service + " — we'll confirm pricing when we reach out.</div>";
       }
       rowsEl.innerHTML = rows;
       formContent.style.display = 'none';
@@ -1829,7 +1829,7 @@ ${galleryHtml}
       else if (_workingDays !== null && !_workingDays.has(dow)) cls += ' cal-off';
       if (dateStr === todayStr) cls += ' cal-today';
       if (state.selected === dateStr) cls += ' cal-selected';
-      html += '<div class="' + cls + '" data-date="' + dateStr + '" onclick="calPickDay(\'' + prefix + '\',\'' + dateStr + '\',this)">' + d + '</div>';
+      html += '<div class="' + cls + '" data-date="' + dateStr + '" onclick="calPickDay(\\'' + prefix + '\\',\\'' + dateStr + '\\',this)">' + d + '</div>';
     }
 
     gridEl.innerHTML = html;
