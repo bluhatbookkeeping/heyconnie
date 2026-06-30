@@ -5,6 +5,55 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
+## Session 85 — 2026-06-29 (continued)
+
+### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match + A2P SMS compliance
+### LAST COMPLETED: Phone input working (digits only, formatting as-you-type with cursor restore), Terms/Privacy nav phone format fixed
+### NEXT: Verify phone formatter on real device; full side-by-side visual QA; booking form end-to-end test (sms_consent_at in DB); support@heyconnie.co inbox (manual — Andrew)
+
+---
+
+### What Was Done
+
+**`templates/bold-dark.js` — phone input (multiple iterations):**
+- Root cause 1: `.hc-form input{appearance:none}` broad rule was stripping native checkbox rendering — fixed with `appearance:checkbox` override on `.hf-consent input[type=checkbox]`
+- Root cause 2: `\D` in regex inside Node.js template literal drops the backslash — Node.js evaluates `'\D'` as `'D'` in non-strict mode. Fixed by using `[^0-9]` character class throughout template literal JS
+- Root cause 3: Setting `e.target.value` inside an `input` event handler resets cursor to position 0 in Chrome — each new character inserted at start, causing `((((` cascade. Fixed with `selectionStart` capture + `setSelectionRange(newPos, newPos)` after setting value
+- Final phone formatter: `input` event strips `[^0-9]`, formats as `(XXX) XXX-XXXX`, saves cursor before, restores with adjusted position after. `maxlength="14"` on HTML input.
+- Removed keydown handler entirely (was blocking digits via unreliable `e.keyCode`; `endsWith(') ')` check was dead code since formatter never produces trailing `) `)
+
+**`terms.html` and `privacy.html` — nav phone format:**
+- Phone in `businesses` table stored as raw digits (`6266541924`)
+- `biz-nav.js` returns raw value; terms/privacy were displaying it as-is
+- Bold-dark.js uses `phoneNav = phoneBare.slice(0,3)+'-'+phoneBare.slice(3,6)+'-'+phoneBare.slice(6)` format
+- Fixed both static files: added `phoneDisplay` variable with same `XXX-XXX-XXXX` format; replaced `e(phone)` with `e(phoneDisplay)` in both desktop and mobile nav HTML
+- Also fixed `\D` → `[^0-9]` in static file JS (belt-and-suspenders; static files don't have template literal issue but consistent)
+
+### What's Working (deployed, commit b6d29e8)
+- ✅ SMS consent checkbox checks/unchecks on all 3 booking screens
+- ✅ Phone input: formats as `(XXX) XXX-XXXX` as you type; delete/backspace works correctly; digits only; max 10 digits
+- ✅ Terms/Privacy nav phone displays `626-654-1924` matching main site
+- ✅ Terms/Privacy open in same tab; Luis's nav header renders with correct fonts
+
+### What's NOT Verified Yet
+- Phone formatter on real mobile device (tested via Chrome DevTools; CDP key simulation behaves differently than physical keyboard)
+- Booking form end-to-end (phone lookup → submit → `sms_consent_at` in Supabase `bookings`)
+- `sms_consent_at` column existence in DB — never confirmed in information_schema
+- `support@heyconnie.co` inbox — must be created before A2P submission (manual — Andrew)
+- Full side-by-side visual QA vs luis-mobile-detailing.vercel.app
+
+### Decisions Made
+- No auto-formatter in template literal context using `\D` — use `[^0-9]` always for regex in embedded JS
+- Cursor restore (`selectionStart` / `setSelectionRange`) required when setting `.value` programmatically in input handlers
+- Phone display format: `XXX-XXX-XXXX` (dashes, no parens) to match bold-dark.js `phoneNav` variable
+
+### Issues Hit
+- `\D` backslash dropped in Node.js template literal: `'\D' === 'D'` in V8 non-strict mode — affects ALL regex shorthand classes (`\d`, `\w`, `\s`, etc.) embedded in template literal JS
+- Setting `e.target.value` in `input` handler resets cursor to position 0 in Chrome — causes cascading formatter loop
+- CDP `press_key` / `type_text` simulation does not reflect real keyboard behavior accurately for this formatter
+
+---
+
 ## Session 84 — 2026-06-29 (continued)
 
 ### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match + A2P SMS compliance
