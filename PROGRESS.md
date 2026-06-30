@@ -5,6 +5,81 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
+## Session 86 — 2026-06-30
+
+### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match + A2P SMS compliance
+### LAST COMPLETED: Nav CSS alignment, Instagram removed from nav, service area removed from trust badges, node_modules cleaned from repo
+### NEXT: Booking form customer lookup issue — phone 415-279-4984 not being recognized / vehicles not pre-filling. Compare lookup behavior vs luis-mobile-detailing.vercel.app. Then: phone formatter verify on real device; sms_consent_at column check; support@heyconnie.co inbox (manual — Andrew).
+
+---
+
+### What Was Done
+
+**`terms.html` + `privacy.html` — nav CSS overhaul:**
+- Replaced entire `<style>` block in both files with exact CSS from `bold-dark.js` verbatim
+- Root cause of nav mismatch: global `a{color:var(--blue);text-decoration:underline}` was bleeding into nav links, requiring compensating overrides that didn't fully work
+- Fixed to: `a{color:inherit;text-decoration:none}` matching bold-dark.js exactly
+- Legal content link styling scoped to `.legal-wrap a{color:var(--blue);text-decoration:underline}`
+- `.container` unscoped (was `.nav .container`), `.btn` corrected to `gap:8px; padding:14px 26px; font-size:16px`, `ul{list-style:none}` added, breakpoint corrected to `768px`
+- Commits: `ec54548`
+
+**`templates/bold-dark.js` + `terms.html` + `privacy.html` — nav cleanup:**
+- Removed "See us on Instagram" from all nav headers (desktop nav-links + mobile nav)
+- Instagram stays in gallery section and footer — nav only
+- Commit: `6831153`
+
+**`templates/bold-dark.js` — trust badges:**
+- Removed service area line (`San Gabriel Valley — Pasadena, West Covina...`) from trust badge bar
+- 4 badges remain: 100% Hand Wash · We Come to You · Interior & Exterior · Wax & Polish Available
+- Commit: `0d16027`
+
+**`.gitignore` + repo cleanup:**
+- `node_modules/` and `.DS_Store` were accidentally committed — removed from tracking
+- `.gitignore` updated to include `node_modules/`, `.DS_Store`, `*.DS_Store`
+- Commits: `a5c964f`, `[cleanup commit]`
+
+**Roadmap:**
+- Confirmed `website-builder-implementation-plan.md` (root) already covers content editing, template switching, and booking widget embed — no new spec needed
+- Deleted duplicate `roadmap/content-templates-embed-spec.md`
+
+### What's Working (verified deployed)
+- ✅ Nav CSS on terms/privacy now identical to main site
+- ✅ "See us on Instagram" gone from all nav headers
+- ✅ Trust badge bar shows 4 items only (service area removed)
+- ✅ Nav logo subtext ("Mobile Car Detailing · Pasadena") intact
+
+### What's NOT Working / Not Yet Verified
+- ❌ Booking form customer lookup — phone 415-279-4984 not being recognized on heyconnie.co/luis-mobile-detail; vehicles not pre-filling. Works on luis-mobile-detailing.vercel.app. Root cause unknown — likely `api/lookup-customer.js` not being called correctly or phone format mismatch.
+- ☐ Phone formatter on real mobile device (still only CDP-tested)
+- ☐ `sms_consent_at` column — never confirmed exists in Supabase `bookings` table
+- ☐ `support@heyconnie.co` inbox — manual action required from Andrew before A2P submission
+- ☐ Full visual QA side-by-side vs luis-mobile-detailing.vercel.app
+
+### Decisions Made
+- `website-builder-implementation-plan.md` stays in root directory as the canonical plan — not moved to roadmap/
+- No new specs needed for content/template/embed — already fully specced
+
+### Issues Hit
+- `node_modules/` was not in `.gitignore` — accidentally committed 4,208 files. Cleaned up.
+- Duplicate spec written before checking existing roadmap files — deleted immediately
+
+### Next Agent Handoff Instructions
+Pick up Phase 5. Priority issue: **booking form customer lookup is broken on heyconnie.co/luis-mobile-detail.**
+
+Test: go to `heyconnie.co/luis-mobile-detail`, open the booking form, enter phone `415-279-4984`. Expected: customer recognized, vehicles pre-filled (Acura ILX 2020, BMW 1 Series 2020, Tesla Model Y 2020). Actual: not recognized.
+
+Compare behavior vs `luis-mobile-detailing.vercel.app` which works correctly.
+
+Investigate:
+1. `api/lookup-customer.js` — how phone is normalized before DB lookup
+2. What phone format is stored in the `customers` table for this customer
+3. Whether the booking form on heyconnie is calling the right endpoint with the right payload
+4. Check network tab in browser for the actual request being sent
+
+Do NOT recode until root cause is confirmed. Read before writing.
+
+---
+
 ## Session 85 — 2026-06-29 (continued)
 
 ### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match + A2P SMS compliance
