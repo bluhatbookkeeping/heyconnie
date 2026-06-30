@@ -590,7 +590,7 @@ ${galleryHtml}
           <div class="hc-form">
             <div class="hf-group">
               <label for="bkPhone" style="text-align:center">Phone Number</label>
-              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" maxlength="10" inputmode="numeric" autocomplete="tel" style="text-align:center">
+              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" maxlength="14" autocomplete="tel" style="text-align:center">
             </div>
             <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
             <div class="hf-msg" id="bkPhoneMsg"></div>
@@ -811,12 +811,22 @@ ${galleryHtml}
   function show(id){ ['scrPhone','scrReturning','scrNew','scrSuccess'].forEach(function(s){ document.getElementById(s).style.display = s===id?'':'none' }) }
   function msg(id, text, isErr){ var el=document.getElementById(id); el.textContent=text; el.className='hf-msg '+(isErr?'hf-error':'hf-success') }
 
-  // Phone input — digits only, max 10, no formatter (formatter causes re-entry loops in template context)
+  // Phone input — format as (XXX) XXX-XXXX; restore cursor after value set to avoid position-0 reset
   var phoneInput = document.getElementById('bkPhone')
   if (phoneInput) {
     phoneInput.addEventListener('input', function(){
-      var v = this.value.replace(/[^0-9]/g,'').slice(0,10)
-      if (this.value !== v) this.value = v
+      var pos = this.selectionStart
+      var oldLen = this.value.length
+      var digits = this.value.replace(/[^0-9]/g,'').slice(0,10)
+      var f = ''
+      if (digits.length > 0) f = '(' + digits.slice(0,3)
+      if (digits.length >= 4) f += ') ' + digits.slice(3,6)
+      if (digits.length >= 7) f += '-' + digits.slice(6,10)
+      if (this.value !== f) {
+        this.value = f
+        var newPos = pos + (f.length - oldLen)
+        this.setSelectionRange(newPos, newPos)
+      }
     })
   }
 
