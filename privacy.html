@@ -4,43 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy — Hey Connie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#1a1a2e;background:#fff;line-height:1.7}
-    a{color:#1d4ed8;text-decoration:underline}
-    header{background:#1a1a2e;padding:18px 24px;display:flex;align-items:center;gap:12px}
-    header a{color:#fff;text-decoration:none;font-weight:700;font-size:20px}
-    header span{color:rgba(255,255,255,.5);font-size:14px}
-    .back-bar{background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:10px 24px}
-    .back-bar a{font-size:14px;color:#1d4ed8;text-decoration:none;font-weight:500}
-    .back-bar a:hover{text-decoration:underline}
-    .container{max-width:760px;margin:0 auto;padding:48px 24px 80px}
-    h1{font-size:32px;font-weight:800;margin-bottom:8px}
-    .meta{font-size:14px;color:#6b7280;margin-bottom:40px}
-    h2{font-size:20px;font-weight:700;margin:36px 0 12px;color:#1a1a2e}
+    :root{
+      --blue:#1d4ed8;--blue-dark:#1e3a8a;
+      --text:#1a1a1a;--muted:#6b7280;--bg:#ffffff;--border:#e5e7eb;
+      --display:'Barlow Condensed',sans-serif;--body:'DM Sans',sans-serif;
+      --r:8px;--max:1200px;
+      --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+      --shadow-md:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--body);color:var(--text);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased}
+    a{color:var(--blue);text-decoration:underline}
+
+    /* Nav — exact match to bold-dark.js */
+    .nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+    .nav .container{width:100%;max-width:var(--max);margin:0 auto;padding:0 20px}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .nav-logo{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:.02em;line-height:1.2;color:var(--text);text-decoration:none}
+    .nav-logo small{display:block;font-family:var(--body);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .nav-links{display:flex;align-items:center;gap:26px;list-style:none}
+    .nav-links a{font-size:15px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s}
+    .nav-links a:hover{color:var(--blue)}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .nav-phone{font-size:15px;font-weight:700;color:var(--blue);text-decoration:none}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;font-family:var(--body);font-size:14px;font-weight:600;border-radius:var(--r);cursor:pointer;transition:all .2s;border:2px solid transparent;white-space:nowrap;text-decoration:none}
+    .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .btn-primary:hover{background:var(--blue-dark);border-color:var(--blue-dark);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+    .nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none}
+    .nav-toggle span{display:block;width:24px;height:2px;background:var(--text);transition:all .3s;border-radius:2px}
+    .nav-mobile{display:none;background:#fff;border-bottom:1px solid var(--border);padding:20px}
+    .nav-mobile.open{display:block}
+    .nav-mobile a{display:block;padding:12px 0;font-size:17px;font-weight:500;border-bottom:1px solid var(--border);color:var(--text);text-decoration:none}
+    .nav-mobile a:last-child{border-bottom:none}
+    .mob-cta{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+    .btn-full{width:100%;justify-content:center}
+    .btn-outline{background:transparent;color:var(--text);border-color:var(--border);font-family:var(--body);font-size:14px;font-weight:600;border-radius:var(--r);padding:10px 18px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+
+    /* Generic Hey Connie fallback header */
+    .hc-header{background:#1a1a2e;padding:18px 24px;display:flex;align-items:center;gap:12px}
+    .hc-header a{color:#fff;text-decoration:none;font-weight:700;font-size:20px;font-family:var(--body)}
+    .hc-header span{color:rgba(255,255,255,.5);font-size:14px;font-family:var(--body)}
+
+    /* Legal content */
+    .legal-wrap{max-width:760px;margin:0 auto;padding:48px 24px 80px}
+    .legal-wrap h1{font-family:var(--display);font-size:clamp(28px,5vw,42px);font-weight:800;margin-bottom:8px;color:var(--text)}
+    .meta{font-size:14px;color:var(--muted);margin-bottom:40px}
+    h2{font-size:20px;font-weight:700;margin:36px 0 12px;color:var(--text);font-family:var(--body)}
     p{margin-bottom:14px;font-size:15px;color:#374151}
     ul{margin:0 0 14px 20px}
     li{font-size:15px;color:#374151;margin-bottom:6px}
-    .highlight{background:#eff6ff;border-left:4px solid #1d4ed8;padding:16px 20px;border-radius:0 8px 8px 0;margin:24px 0}
+    .highlight{background:#eff6ff;border-left:4px solid var(--blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:24px 0}
     .highlight p{margin:0;font-size:14px}
-    footer{text-align:center;padding:24px;font-size:13px;color:#9ca3af;border-top:1px solid #e5e7eb}
-    .det-nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,.1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-    .det-nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1200px;margin:0 auto;padding:0 20px}
-    .det-logo{font-size:21px;font-weight:700;color:#1a1a1a;text-decoration:none;line-height:1.2}
-    .det-logo small{display:block;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#6b7280}
-    .det-links{display:flex;align-items:center;gap:26px;list-style:none}
-    .det-links a{font-size:15px;font-weight:500;color:#6b7280;text-decoration:none;transition:color .15s}
-    .det-links a:hover{color:#1d4ed8}
-    .det-right{display:flex;align-items:center;gap:12px}
-    .det-phone{font-size:15px;font-weight:700;color:#1d4ed8;text-decoration:none}
-    .det-book{background:#1d4ed8;color:#fff;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:600;text-decoration:none;transition:background .2s}
-    .det-book:hover{background:#1e3a8a}
-    @media(max-width:767px){.det-links,.det-right{display:none}}
+    footer{text-align:center;padding:24px;font-size:13px;color:#9ca3af;border-top:1px solid var(--border);font-family:var(--body)}
+
+    @media(max-width:767px){
+      .nav-links,.nav-right{display:none}
+      .nav-toggle{display:flex}
+    }
   </style>
 </head>
 <body>
 
-<div id="detailerNav"></div>
+<div id="siteNav">
+  <div class="hc-header">
+    <a href="https://heyconnie.co">Hey Connie</a>
+    <span>/ Privacy Policy</span>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -56,36 +91,53 @@
       var phone = biz.phone || ''
       var phoneBare = phone.replace(/\D/g,'')
       var ig = biz.instagram || ''
-      var nav = document.getElementById('detailerNav')
-      nav.innerHTML = [
-        '<nav class="det-nav">',
-        '  <div class="det-nav-inner">',
-        '    <a href="/' + slug + '#top" class="det-logo">',
-        '      ' + escH(name),
-        '      <small>Mobile Car Detailing &middot; ' + escH(area) + '</small>',
-        '    </a>',
-        '    <ul class="det-links">',
-        '      <li><a href="/' + slug + '#services">Services</a></li>',
-        '      <li><a href="/' + slug + '#pricing">Pricing</a></li>',
-        '      <li><a href="/' + slug + '#book">Book Appointment</a></li>',
-        ig ? '      <li><a href="' + escH(ig) + '" target="_blank" rel="noopener">See us on Instagram</a></li>' : '',
-        '      <li><a href="/' + slug + '#book">Contact</a></li>',
-        '    </ul>',
-        '    <div class="det-right">',
-        phone ? '      <a href="tel:' + phoneBare + '" class="det-phone">' + escH(phone) + '</a>' : '',
-        '      <a href="/' + slug + '#book" class="det-book">Book Now</a>',
-        '    </div>',
-        '  </div>',
+      var base = '/' + slug
+      var e = function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+      document.getElementById('siteNav').innerHTML =
+        '<nav class="nav">' +
+          '<div class="container">' +
+            '<div class="nav-inner">' +
+              '<a href="' + base + '#top" class="nav-logo">' +
+                e(name) +
+                '<small>Mobile Car Detailing &middot; ' + e(area) + '</small>' +
+              '</a>' +
+              '<ul class="nav-links">' +
+                '<li><a href="' + base + '#services">Services</a></li>' +
+                '<li><a href="' + base + '#pricing">Pricing</a></li>' +
+                '<li><a href="' + base + '#book">Book Appointment</a></li>' +
+                (ig ? '<li><a href="' + e(ig) + '" target="_blank" rel="noopener">See us on Instagram</a></li>' : '') +
+                '<li><a href="' + base + '#book">Contact</a></li>' +
+              '</ul>' +
+              '<div class="nav-right">' +
+                (phone ? '<a href="tel:' + phoneBare + '" class="nav-phone">' + e(phone) + '</a>' : '') +
+                '<a href="' + base + '#book" class="btn btn-primary">Book Now</a>' +
+              '</div>' +
+              '<button class="nav-toggle" id="navToggle" aria-label="Menu">' +
+                '<span></span><span></span><span></span>' +
+              '</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="nav-mobile" id="navMobile">' +
+            '<a href="' + base + '#services">Services</a>' +
+            '<a href="' + base + '#pricing">Pricing</a>' +
+            '<a href="' + base + '#book">Book Appointment</a>' +
+            (ig ? '<a href="' + e(ig) + '" target="_blank" rel="noopener">See us on Instagram</a>' : '') +
+            '<div class="mob-cta">' +
+              (phone ? '<a href="tel:' + phoneBare + '" class="btn btn-primary btn-full">Call Now &mdash; ' + e(phone) + '</a>' : '') +
+              '<a href="' + base + '#book" class="btn btn-outline btn-full">Book Appointment</a>' +
+            '</div>' +
+          '</div>' +
         '</nav>'
-      ].join('\n')
-      document.title = name + ' — Privacy Policy'
+      document.getElementById('navToggle').addEventListener('click', function(){
+        document.getElementById('navMobile').classList.toggle('open')
+      })
+      document.title = e(name) + ' — Privacy Policy'
     })
     .catch(function(){})
-  function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
 })()
 </script>
 
-<div class="container">
+<div class="legal-wrap">
   <h1>Privacy Policy</h1>
   <p class="meta">Effective Date: June 29, 2026 &nbsp;·&nbsp; Last Updated: June 29, 2026</p>
 
