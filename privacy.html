@@ -89,7 +89,8 @@
       var name = biz.name || ''
       var area = biz.service_area ? biz.service_area.split(',')[0].trim() : 'Mobile Detailing'
       var phone = biz.phone || ''
-      var phoneBare = phone.replace(/\D/g,'')
+      var phoneBare = phone.replace(/[^0-9]/g,'').slice(-10)
+      var phoneDisplay = phoneBare.length === 10 ? phoneBare.slice(0,3)+'-'+phoneBare.slice(3,6)+'-'+phoneBare.slice(6) : phone
       var ig = biz.instagram || ''
       var base = '/' + slug
       var e = function(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
@@ -109,7 +110,7 @@
                 '<li><a href="' + base + '#book">Contact</a></li>' +
               '</ul>' +
               '<div class="nav-right">' +
-                (phone ? '<a href="tel:' + phoneBare + '" class="nav-phone">' + e(phone) + '</a>' : '') +
+                (phone ? '<a href="tel:' + phoneBare + '" class="nav-phone">' + e(phoneDisplay) + '</a>' : '') +
                 '<a href="' + base + '#book" class="btn btn-primary">Book Now</a>' +
               '</div>' +
               '<button class="nav-toggle" id="navToggle" aria-label="Menu">' +
@@ -123,7 +124,7 @@
             '<a href="' + base + '#book">Book Appointment</a>' +
             (ig ? '<a href="' + e(ig) + '" target="_blank" rel="noopener">See us on Instagram</a>' : '') +
             '<div class="mob-cta">' +
-              (phone ? '<a href="tel:' + phoneBare + '" class="btn btn-primary btn-full">Call Now &mdash; ' + e(phone) + '</a>' : '') +
+              (phone ? '<a href="tel:' + phoneBare + '" class="btn btn-primary btn-full">Call Now &mdash; ' + e(phoneDisplay) + '</a>' : '') +
               '<a href="' + base + '#book" class="btn btn-outline btn-full">Book Appointment</a>' +
             '</div>' +
           '</div>' +
