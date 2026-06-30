@@ -470,7 +470,7 @@ All emails:
 | Security (PIN + magic link) | Not created yet |
 | Voice-managed business tools | Not created yet |
 | Multi-tenant routing | Documented in CLAUDE.md |
-| SMS channel | Not spec'd yet |
+| SMS channel (A2P + outbound) | `roadmap/sms-infrastructure-plan.md` ✅ |
 | Review funnel | Not spec'd yet |
 | Growth Advisor / AI COO | `growth-advisor-spec.md` ✅ |
 | Tenant provisioning | Not spec'd yet |
