@@ -405,6 +405,7 @@ function renderBoldDark({ business, services }) {
     <div class="nav-inner">
       <a href="#top" class="nav-logo">
         ${bizName}
+        <small>Mobile Car Detailing &middot; ${escHtml(serviceArea ? serviceArea.split(',')[0].trim() : 'Pasadena')}</small>
       </a>
       <ul class="nav-links">
         <li><a href="#services">Services</a></li>
@@ -469,7 +470,6 @@ function renderBoldDark({ business, services }) {
       <div class="trust-item-bar"><span class="chk"></span> We Come to You</div>
       <div class="trust-item-bar"><span class="chk"></span> Interior &amp; Exterior</div>
       <div class="trust-item-bar"><span class="chk"></span> Wax &amp; Polish Available</div>
-      ${serviceArea ? `<div class="trust-item-bar"><span class="chk"></span> ${escHtml(serviceArea)}</div>` : ''}
     </div>
   </div>
 </div>
