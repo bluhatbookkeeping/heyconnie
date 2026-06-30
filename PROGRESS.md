@@ -5,11 +5,65 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
-## Session 83 — 2026-06-29 (continued)
+## Session 84 — 2026-06-29 (continued)
 
 ### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match + A2P SMS compliance
-### LAST COMPLETED: All section backgrounds fixed, chat widget fixed, SMS consent added, Terms/Privacy pages live
-### NEXT: Verify /terms and /privacy resolve correctly (routing fix just deployed); then Phase 3 (api/book-widget.js)
+### LAST COMPLETED: SMS consent checkbox working, phone input fixed, Terms/Privacy detailer nav live
+### NEXT: Visual QA side-by-side (heyconnie.co/luis-mobile-detail vs luis-mobile-detailing.vercel.app); booking form end-to-end test (sms_consent_at in Supabase); support@heyconnie.co inbox creation (manual — Andrew); then api/book-widget.js review
+
+---
+
+### What Was Done
+
+**`templates/bold-dark.js` — booking form fixes:**
+- SMS consent checkbox: root cause was `.hc-form input{appearance:none;-webkit-appearance:none}` broad rule stripping native checkbox rendering. Fixed by adding `appearance:checkbox;-webkit-appearance:checkbox` specifically on `.hf-consent input[type=checkbox]`
+- SMS consent HTML: restructured all 3 consent blocks (scrPhone, scrReturning, scrNew) — checkbox now wrapped as child of `<label>` (no `for` attribute needed); text in `<span>` inside label. Most reliable pattern across browsers.
+- SMS consent CSS: `.hf-consent label` gets `display:flex;align-items:flex-start;gap:10px;cursor:pointer`; `.hf-consent span` gets small muted text styling; removed `display:flex` from `.hf-consent` wrapper
+- Phone input: removed broken keydown handler (e.keyCode unreliable — `(` = shift+9 = keyCode 57, in allowed range; mobile keyCode = 229 blocked all input). Removed formatter entirely (setting this.value in input event caused re-entrant loop across browsers). Now: `inputmode="numeric"`, `maxlength="10"` in HTML, simple input listener strips non-digits only. Placeholder shows (626) 555-1234 as format hint.
+- Copy updates: "Instagram" → "See us on Instagram" (nav, mobile nav, footer, hero); "View Instagram" → "See our Instagram @handle" (gallery button); "Request an Appointment/Appointment" → "Book an Appointment" throughout
+- Terms/Privacy links: removed `target="_blank"`, use relative `/terms?b=${slug}` and `/privacy?b=${slug}`
+
+**New files:**
+- `api/terms.js` — serverless Terms of Service endpoint (accepts `?b=slug`, renders page)
+- `api/privacy.js` — serverless Privacy Policy endpoint (same pattern)
+- `api/biz-nav.js` — public GET endpoint returning `{id,name,phone,instagram,service_area}` for a slug
+- `api/utils/render-legal-page.js` — shared nav renderer for terms/privacy API routes
+
+**`terms.html` and `privacy.html` — updated:**
+- Added Google Fonts (Barlow Condensed + DM Sans) — exact match to bold-dark.js
+- Added CSS vars matching bold-dark.js (--blue, --display, --body, etc.)
+- JS on page load reads `?b=slug`, fetches `/api/biz-nav`, injects full `.nav` HTML with exact bold-dark.js class names (.nav, .nav-inner, .nav-logo, .nav-links, .nav-right, .nav-phone, .nav-toggle, .nav-mobile)
+- Fallback: generic "Hey Connie" header if no `?b=` param
+- Mobile hamburger toggle JS included
+- Note: static files served by Vercel cleanUrls before rewrites — JS injection is the reliable path
+
+**`vercel.json`:**
+- Added `/terms` and `/privacy` rewrites pointing to API functions (belt-and-suspenders, but cleanUrls takes priority for static files)
+
+### What's Working (deployed, commit c452a1c)
+- ✅ SMS consent checkbox checks/unchecks on all 3 booking screens
+- ✅ Phone input: digits only, max 10, numeric keyboard on mobile
+- ✅ Terms/Privacy open in same tab (no target="_blank")
+- ✅ Terms/Privacy load Luis's nav header (Barlow Condensed font, sticky nav, correct links)
+- ✅ Instagram → "See us on Instagram" / "See our Instagram @handle" copy live
+- ✅ "Request an Appointment" → "Book an Appointment" copy live
+
+### What's NOT Verified Yet
+- Booking form end-to-end (phone lookup → submit → `sms_consent_at` populated in Supabase `bookings`)
+- `sms_consent_at` column existence in DB (not in DB_SCHEMA.md — needs verification)
+- `support@heyconnie.co` inbox (needs to be created before A2P submission — manual action by Andrew)
+- Full side-by-side visual QA vs luis-mobile-detailing.vercel.app
+
+### Decisions Made
+- Phone input: no auto-formatter (too fragile across browsers); raw digits only with placeholder hint
+- Terms/Privacy: static files with client-side JS nav injection (not API routing) — Vercel cleanUrls serves static files before rewrites
+- SMS consent: label-wrap pattern (input as child of label) — most reliable across browsers vs `for` attribute
+
+### Issues Hit
+- `appearance:none` on `.hc-form input` rule was nuking checkbox rendering — hidden for multiple sessions
+- Phone keydown handler: `(` and `)` have same keyCode as digits 9 and 0 (57, 48); mobile keyCode=229 blocked all input
+- Phone `input` formatter: setting `this.value` re-triggers `input` on some browsers causing loop
+- Vercel `rewrites` array runs after filesystem — static terms.html/privacy.html served before API routes
 
 ---
 
