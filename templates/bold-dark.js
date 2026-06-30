@@ -813,10 +813,15 @@ ${galleryHtml}
 
   // Phone input — digits only, max 10
   var phoneInput = document.getElementById('bkPhone')
-  if (phoneInput) phoneInput.addEventListener('input', function(){
-    var digits = this.value.replace(/\D/g,'').slice(0,10)
-    if (this.value !== digits) this.value = digits
-  })
+  if (phoneInput) {
+    phoneInput.addEventListener('beforeinput', function(e){
+      if (e.data && /\D/.test(e.data)) e.preventDefault()
+    })
+    phoneInput.addEventListener('input', function(){
+      var digits = this.value.replace(/\D/g,'').slice(0,10)
+      if (this.value !== digits) this.value = digits
+    })
+  }
 
   // Phone lookup
   var phoneBtn = document.getElementById('bkPhoneBtn')
