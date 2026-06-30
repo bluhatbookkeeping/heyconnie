@@ -590,7 +590,7 @@ ${galleryHtml}
           <div class="hc-form">
             <div class="hf-group">
               <label for="bkPhone" style="text-align:center">Phone Number</label>
-              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" inputmode="numeric" maxlength="10" autocomplete="tel" style="text-align:center">
+              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" maxlength="14" autocomplete="tel" style="text-align:center">
             </div>
             <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
             <div class="hf-msg" id="bkPhoneMsg"></div>
@@ -811,15 +811,22 @@ ${galleryHtml}
   function show(id){ ['scrPhone','scrReturning','scrNew','scrSuccess'].forEach(function(s){ document.getElementById(s).style.display = s===id?'':'none' }) }
   function msg(id, text, isErr){ var el=document.getElementById(id); el.textContent=text; el.className='hf-msg '+(isErr?'hf-error':'hf-success') }
 
-  // Phone input — digits only, max 10
+  // Phone input — (XXX) XXX-XXXX auto-format (same pattern as Luis site)
   var phoneInput = document.getElementById('bkPhone')
   if (phoneInput) {
-    phoneInput.addEventListener('beforeinput', function(e){
-      if (e.data && /\D/.test(e.data)) e.preventDefault()
+    phoneInput.addEventListener('input', function(e){
+      var digits = e.target.value.replace(/\D/g,'').slice(0,10)
+      var f = ''
+      if (digits.length > 0) f = '(' + digits.slice(0,3)
+      if (digits.length >= 4) f += ') ' + digits.slice(3,6)
+      if (digits.length >= 7) f += '-' + digits.slice(6,10)
+      e.target.value = f
     })
-    phoneInput.addEventListener('input', function(){
-      var digits = this.value.replace(/\D/g,'').slice(0,10)
-      if (this.value !== digits) this.value = digits
+    phoneInput.addEventListener('keydown', function(e){
+      if (e.key === 'Backspace' && phoneInput.value.endsWith(') ')) {
+        e.preventDefault()
+        phoneInput.value = phoneInput.value.slice(0,-2)
+      }
     })
   }
 
