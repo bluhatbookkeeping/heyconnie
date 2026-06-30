@@ -405,7 +405,6 @@ function renderBoldDark({ business, services }) {
     <div class="nav-inner">
       <a href="#top" class="nav-logo">
         ${bizName}
-        <small>Mobile Car Detailing &middot; ${escHtml(serviceArea ? serviceArea.split(',')[0].trim() : 'Pasadena')}</small>
       </a>
       <ul class="nav-links">
         <li><a href="#services">Services</a></li>
