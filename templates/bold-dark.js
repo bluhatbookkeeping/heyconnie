@@ -1684,7 +1684,7 @@ ${galleryHtml}
       var rowsEl = document.getElementById('successPricingRows');
       var paymentEl = document.getElementById('successPaymentNote');
       var rows = '<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #bbf7d0">';
-      rows += '<div><strong>' + payload.name + '</strong> &nbsp;&middot;&nbsp; ' + formatDisplayPhone(payload.phone.replace(/^\+1/, '')) + '</div>';
+      rows += '<div><strong>' + payload.name + '</strong> &nbsp;&middot;&nbsp; ' + formatDisplayPhone(payload.phone.slice(-10)) + '</div>';
       if (payload.email) rows += '<div style="color:#555;font-size:13px">' + payload.email + '</div>';
       if (payload.make) rows += '<div style="margin-top:4px">' + payload.year + ' ' + payload.make + ' ' + payload.model + '</div>';
       if (payload.city) rows += '<div style="font-size:13px;color:#555">' + payload.city + '</div>';
@@ -1971,7 +1971,7 @@ ${galleryHtml}
   ['aPromoCode','bPromoCode'].forEach(function(id) {
     var el = document.getElementById(id);
     if (!el) return;
-    el.addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/\s+/g,''); });
+    el.addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/ /g,''); });
   });
 
   var _placesLoaded = false;
