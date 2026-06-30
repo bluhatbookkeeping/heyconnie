@@ -411,7 +411,6 @@ function renderBoldDark({ business, services }) {
         <li><a href="#services">Services</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#book">Book Appointment</a></li>
-        ${instagram ? `<li><a href="${escHtml(instagram)}" target="_blank" rel="noopener">See us on Instagram</a></li>` : ''}
         <li><a href="#book">Contact</a></li>
       </ul>
       <div class="nav-right">
@@ -427,7 +426,6 @@ function renderBoldDark({ business, services }) {
     <a href="#services">Services</a>
     ${gallery.length ? '<a href="#gallery">Our Work</a>' : ''}
     <a href="#book">Book Appointment</a>
-    ${instagram ? `<a href="${escHtml(instagram)}" target="_blank" rel="noopener">See us on Instagram</a>` : ''}
     <div class="mob-cta">
       ${phone ? `<a href="tel:${phoneBare}" class="btn btn-primary btn-full" style="justify-content:center">Call Now — ${phoneFmt}</a>` : ''}
       <a href="#book" class="btn btn-outline btn-full" style="justify-content:center">Book Appointment</a>
