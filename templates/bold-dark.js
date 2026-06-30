@@ -106,9 +106,20 @@ function renderBoldDark({ business, services }) {
     ? `<em>${tagline}</em>`
     : `Professional Mobile Car Detailing<br><em>We Come to You</em>`
 
-  const svcOptions = svcs.map(s =>
-    `<option value="${escHtml(s.name)}">${escHtml(s.name)} — Starting at $${Number(s.starting_price).toFixed(0)}</option>`
-  ).join('')
+  const SVC_SHORT_DESC = {
+    'Just a Wash': 'Quick exterior hand wash and tire shine.',
+    'Standard Detail': 'Interior and exterior clean, inside and out.',
+    'Full Detail': 'The complete package — wax, polish, engine bay, carpet shampoo.'
+  }
+  const notSureCard = `<div class="book-svc-card" data-service="Not sure — help me choose" onclick="selectSvcA(this)"><div class="bsvc-name">Not sure</div><div class="bsvc-price">Help me choose</div><div class="bsvc-desc">Luis will recommend the right service for your vehicle.</div></div>`
+  const svcBookCardsA = svcs.map(s => {
+    const desc = SVC_SHORT_DESC[s.name] || ''
+    return `<div class="book-svc-card" data-service="${escHtml(s.name)}" onclick="selectSvcA(this)"><div class="bsvc-name">${escHtml(s.name)}</div><div class="bsvc-price">Starting at $${Number(s.starting_price).toFixed(0)}</div>${desc ? `<div class="bsvc-desc">${escHtml(desc)}</div>` : ''}</div>`
+  }).join('') + notSureCard
+  const svcBookCardsB = svcs.map(s => {
+    const desc = SVC_SHORT_DESC[s.name] || ''
+    return `<div class="book-svc-card" data-service="${escHtml(s.name)}" onclick="selectSvcB(this)"><div class="bsvc-name">${escHtml(s.name)}</div><div class="bsvc-price">Starting at $${Number(s.starting_price).toFixed(0)}</div>${desc ? `<div class="bsvc-desc">${escHtml(desc)}</div>` : ''}</div>`
+  }).join('') + `<div class="book-svc-card" data-service="Not sure — help me choose" onclick="selectSvcB(this)"><div class="bsvc-name">Not sure</div><div class="bsvc-price">Help me choose</div><div class="bsvc-desc">Luis will recommend the right service for your vehicle.</div></div>`
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -363,6 +374,78 @@ function renderBoldDark({ business, services }) {
     #chatSend{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:9px 14px;cursor:pointer;font-weight:600;font-size:14px}
     #chatSend:hover{background:var(--blue-dark)}
 
+    /* Multi-step booking form */
+    .field-error{font-size:13px;color:#ef4444;margin-top:5px;min-height:18px}
+    .book-svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+    .book-svc-card{padding:16px;border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:border-color .15s,background .15s;background:#fff;user-select:none}
+    .book-svc-card:hover{border-color:var(--blue);background:var(--blue-light)}
+    .book-svc-card.selected{border-color:var(--blue);background:var(--blue-light);border-width:2px}
+    .book-svc-card .bsvc-name{font-weight:700;font-size:15px}
+    .book-svc-card .bsvc-price{font-size:13px;color:var(--blue);font-weight:600;margin-top:2px}
+    .book-svc-card .bsvc-desc{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5}
+    .pill-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .pill-btn{padding:9px 16px;font-family:var(--body);font-size:14px;font-weight:600;background:var(--bg-gray);border:1.5px solid var(--border);border-radius:20px;cursor:pointer;transition:all .15s;color:var(--text);line-height:1}
+    .pill-btn:hover{border-color:var(--blue);background:var(--blue-light)}
+    .pill-btn.selected{background:var(--blue);border-color:var(--blue);color:#fff}
+    .collapse-link{font-size:14px;color:var(--blue);cursor:pointer;background:none;border:none;padding:0;font-family:var(--body);font-weight:500;display:inline-flex;align-items:center;gap:4px}
+    .collapse-link:hover{text-decoration:underline}
+    .summary-card{background:var(--bg-gray);border:1.5px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:16px}
+    .summary-row{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:14px}
+    .summary-row:last-child{border-bottom:none}
+    .summary-label{color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;min-width:72px;flex-shrink:0}
+    .summary-val{flex:1;font-weight:500}
+    .summary-edit-link{font-size:13px;color:var(--blue);cursor:pointer;margin-left:auto;white-space:nowrap;flex-shrink:0}
+    .phone-confirmed{font-size:14px;color:var(--muted);margin-bottom:16px;padding:10px 13px;background:var(--bg-gray);border-radius:var(--r);border:1.5px solid var(--border)}
+    .phone-confirmed span{color:var(--text);font-weight:600}
+    .phone-confirmed a{color:var(--blue);font-size:13px;margin-left:8px}
+    .step-progress{display:flex;align-items:center;margin-bottom:28px;gap:0}
+    .step-item{display:flex;flex-direction:column;align-items:center;flex:1;position:relative}
+    .step-item:not(:last-child)::after{content:'';position:absolute;top:16px;left:50%;width:100%;height:2px;background:var(--border);z-index:0}
+    .step-item.done:not(:last-child)::after,.step-item.active:not(:last-child)::after{background:var(--blue)}
+    .step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:var(--bg-gray);border:2px solid var(--border);color:var(--muted);position:relative;z-index:1;transition:all .25s}
+    .step-item.active .step-num,.step-item.done .step-num{background:var(--blue);border-color:var(--blue);color:#fff}
+    .step-label{font-size:11px;font-weight:600;color:var(--muted);margin-top:5px;letter-spacing:.04em;text-transform:uppercase;text-align:center}
+    .step-item.active .step-label,.step-item.done .step-label{color:var(--blue)}
+    .step-panel{display:none}
+    .step-panel.active{display:block}
+    .step-title{font-family:var(--display);font-size:20px;font-weight:700;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+    .step-nav{display:flex;gap:10px;margin-top:20px}
+    .step-nav .btn{flex:1}
+    .slot-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+    .slot-btn{padding:9px 14px;font-family:var(--body);font-size:14px;font-weight:600;background:var(--bg-gray);border:1.5px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .15s;color:var(--text)}
+    .slot-btn:hover{border-color:var(--blue);background:#fff}
+    .slot-btn.selected{background:var(--blue);border-color:var(--blue);color:#fff}
+    .slot-msg{font-size:14px;color:var(--muted);margin-top:8px}
+    .cal-wrap{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:#fff;user-select:none}
+    .cal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-gray);border-bottom:1px solid var(--border)}
+    .cal-header button{background:none;border:none;cursor:pointer;font-size:18px;color:var(--text);padding:2px 8px;border-radius:4px;line-height:1}
+    .cal-header button:hover{background:var(--border)}
+    .cal-month{font-family:var(--body);font-weight:700;font-size:15px}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0}
+    .cal-dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:8px 0;background:var(--bg-gray);border-bottom:1px solid var(--border)}
+    .cal-day{text-align:center;padding:9px 4px;font-size:14px;font-weight:500;cursor:pointer;transition:background .12s,color .12s;color:var(--text)}
+    .cal-day:hover:not(.cal-off):not(.cal-past):not(.cal-empty){background:var(--blue-light);color:var(--blue)}
+    .cal-day.cal-selected{background:var(--blue);color:#fff;border-radius:4px}
+    .cal-day.cal-off,.cal-day.cal-past{color:#ccc;cursor:default;pointer-events:none}
+    .cal-day.cal-empty{pointer-events:none}
+    .cal-day.cal-today{font-weight:800;text-decoration:underline}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .fg{display:flex;flex-direction:column;gap:5px}
+    .fg.full{grid-column:1/-1}
+    .fg label{font-size:14px;font-weight:600}
+    .fg input,.fg select,.fg textarea{width:100%;padding:11px 13px;font-family:var(--body);font-size:16px;color:var(--text);background:var(--bg-gray);border:1.5px solid var(--border);border-radius:var(--r);outline:none;appearance:none;transition:border-color .15s,box-shadow .15s}
+    .fg select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:20px;padding-right:34px}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(29,78,216,.08)}
+    .fg textarea{resize:vertical;min-height:90px}
+    .form-hint{font-size:13px;color:var(--muted);text-align:center;margin-top:10px}
+    .form-success{display:none;text-align:center;padding:44px 28px}
+    .form-success.show{display:block}
+    .sms-consent-wrap{margin:14px 0 4px}
+    .sms-consent-wrap label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;width:100%}
+    .sms-consent-wrap input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--blue);cursor:pointer;appearance:checkbox;-webkit-appearance:checkbox;background:none;border:none;padding:0}
+    .sms-consent-wrap span{font-size:.78rem;color:var(--muted);line-height:1.5;font-weight:400}
+    .sms-consent-wrap a{color:var(--blue);text-decoration:underline}
+
     /* Responsive */
     @media(max-width:1024px){
       .footer-inner{grid-template-columns:2fr 1fr}
@@ -566,138 +649,353 @@ ${svcs.length ? `
 ${galleryHtml}
 
 <!-- BOOKING FORM -->
-<section class="booking-section" id="book">
+<section class="section section--gray" id="book">
   <div class="container">
-    <p class="label">Book an Appointment</p>
     <div class="form-wrap">
       <div>
-        <h2 class="h2" style="margin-bottom:14px">Request Your Detail</h2>
-        <p class="desc" style="margin-bottom:28px">Fill out the form and Luis will follow up with pricing and availability based on your vehicle and the service you need.</p>
+        <p class="label">Book an Appointment</p>
+        <h2 class="h2">Request Your Detail</h2>
+        <p class="desc">Fill out the form and ${bizName} will follow up with pricing and availability based on your vehicle and the service you need.</p>
         ${phone ? `<div class="form-contact-box">
           <h4>Prefer to Call?</h4>
-          <p>For faster service, call Luis directly. He can answer questions, give you a price, and confirm availability right away.</p>
-          <a href="tel:${phoneBare}">☎ ${phoneNav}</a>
+          <p>For faster service, call directly. We can answer questions, give you a price, and confirm availability right away.</p>
+          <a href="tel:${phoneBare}"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${phoneNav}</a>
         </div>` : ''}
       </div>
-      <div class="form-box" id="bookingBox">
-        <!-- Screen: phone lookup -->
-        <div id="scrPhone" style="text-align:center;max-width:380px;margin:0 auto">
-          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:6px">Book Your Detail</h3>
-          <p style="font-size:14px;color:var(--muted);margin-bottom:20px">Enter your phone number to get started.<br>Booked with us before? We'll pull up your details.</p>
-          <div class="hc-form">
-            <div class="hf-group">
-              <label for="bkPhone" style="text-align:center">Phone Number</label>
-              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" maxlength="14" autocomplete="tel" style="text-align:center">
+
+      <div class="form-box">
+        <div id="formContent">
+
+          <!-- Phone Entry Screen -->
+          <div id="phoneEntry" style="text-align:center;padding:10px 0 4px">
+            <div class="step-title" style="border:none;padding-bottom:6px">Book Your Detail</div>
+            <p style="font-size:15px;color:var(--muted);margin-bottom:22px;line-height:1.6">Enter your phone number to get started.<br>Booked with us before? We'll pull up your details.</p>
+            <div class="fg" style="max-width:320px;margin:0 auto">
+              <label for="entryPhone">Phone Number</label>
+              <input type="tel" id="entryPhone" placeholder="(626) 555-1234" maxlength="14" autocomplete="tel" style="font-size:18px;text-align:center">
+              <div id="entryPhoneErr" class="field-error"></div>
             </div>
-            <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
-            <div class="hf-msg" id="bkPhoneMsg"></div>
-            <div class="hf-consent" style="margin-top:14px">
+            <div style="margin-top:18px;max-width:320px;margin-left:auto;margin-right:auto">
+              <button type="button" id="entryBtn" class="btn btn-primary btn-lg" style="width:100%" onclick="submitPhone()">Get Started</button>
+            </div>
+            <div id="entryMsg" style="font-size:13px;color:var(--muted);margin-top:10px;min-height:20px"></div>
+            <div class="sms-consent-wrap" style="max-width:320px;margin:14px auto 0;text-align:left">
               <label>
-                <input type="checkbox" id="bkSmsConsentPhone">
+                <input type="checkbox" id="smsConsentPhone">
                 <span>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</span>
               </label>
             </div>
-            ${phone ? `<p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneNav}</a></p>` : ''}
+            ${phone ? `<p style="margin-top:16px;font-size:14px;color:var(--muted)">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneNav}</a></p>` : ''}
           </div>
+
+          <!-- Path A: Returning Customer -->
+          <div id="pathA" style="display:none">
+            <div class="step-title" id="pathATitle" style="padding-bottom:10px">Welcome back!</div>
+            <p style="font-size:15px;color:var(--muted);margin-bottom:20px;line-height:1.6">Here's your info from last time. Confirm the details and pick a time.</p>
+            <form id="formA" novalidate>
+              <input type="hidden" id="aPhone" name="phone">
+              <input type="hidden" id="aName" name="name">
+              <input type="hidden" id="aEmail" name="email">
+              <input type="hidden" id="aCity" name="city">
+              <input type="hidden" id="aMake" name="make">
+              <input type="hidden" id="aModelH" name="model">
+              <input type="hidden" id="aYear" name="year">
+              <input type="hidden" id="aService" name="service">
+
+              <!-- Vehicle picker (shown when customer has 2+ vehicles) -->
+              <div id="aVehiclePickerWrap" style="display:none;margin-bottom:20px">
+                <div style="font-size:15px;font-weight:700;font-family:var(--display);margin-bottom:8px">Which vehicle?</div>
+                <div id="aVehicleGrid" class="book-svc-grid"></div>
+              </div>
+
+              <!-- Service selection -->
+              <div style="font-size:15px;font-weight:700;font-family:var(--display);margin-bottom:8px">Service</div>
+              <div class="book-svc-grid" id="pathASvcGrid">
+                ${svcBookCardsA}
+              </div>
+              <div id="pathASvcErr" class="field-error" style="margin-top:4px"></div>
+
+              <!-- Summary card -->
+              <div style="font-size:15px;font-weight:700;font-family:var(--display);margin:20px 0 8px">Your Details</div>
+              <div class="summary-card">
+                <div class="summary-row">
+                  <span class="summary-label">Vehicle</span>
+                  <span class="summary-val" id="aSummaryVehicle">—</span>
+                  <span class="summary-edit-link" onclick="togglePathAEdit('vehicle')">Edit</span>
+                </div>
+                <div id="aEditVehicle" style="display:none;padding:10px 0 4px">
+                  <div class="form-grid" style="grid-template-columns:1fr 1fr">
+                    <div class="fg">
+                      <label for="aEditMake">Make</label>
+                      <select id="aEditMake"><option value="">Select make...</option></select>
+                    </div>
+                    <div class="fg">
+                      <label for="aEditModel">Model</label>
+                      <select id="aEditModel" disabled><option value="">Select make first...</option></select>
+                    </div>
+                    <div class="fg">
+                      <label for="aEditYear">Year</label>
+                      <input type="number" id="aEditYear" placeholder="e.g. 2020" min="1930" max="2027">
+                    </div>
+                  </div>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Location</span>
+                  <span class="summary-val" id="aSummaryCity">—</span>
+                  <span class="summary-edit-link" onclick="togglePathAEdit('city')">Edit</span>
+                </div>
+                <div id="aEditCity" style="display:none;padding:10px 0 4px">
+                  <div class="fg">
+                    <label for="aEditCityInput">Service Location</label>
+                    <input type="text" id="aEditCityInput" placeholder="Enter your address..." autocomplete="off">
+                  </div>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Phone</span>
+                  <span class="summary-val" id="aSummaryPhone">—</span>
+                  <span class="summary-edit-link" onclick="togglePathAEdit('phone')">Edit</span>
+                </div>
+                <div id="aEditPhone" style="display:none;padding:10px 0 4px">
+                  <div class="fg">
+                    <label for="aEditPhoneInput">Phone Number</label>
+                    <input type="tel" id="aEditPhoneInput" placeholder="(415) 279-4984">
+                  </div>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Name</span>
+                  <span class="summary-val" id="aSummaryName">—</span>
+                  <span class="summary-edit-link" onclick="togglePathAEdit('name')">Edit</span>
+                </div>
+                <div id="aEditName" style="display:none;padding:10px 0 4px">
+                  <div class="fg">
+                    <label for="aEditNameInput">Full Name</label>
+                    <input type="text" id="aEditNameInput" placeholder="Your full name">
+                  </div>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Email</span>
+                  <span class="summary-val" id="aSummaryEmail">—</span>
+                  <span class="summary-edit-link" onclick="togglePathAEdit('email')">Edit</span>
+                </div>
+                <div id="aEditEmail" style="display:none;padding:10px 0 4px">
+                  <div class="fg">
+                    <label for="aEditEmailInput">Email *</label>
+                    <input type="email" id="aEditEmailInput" placeholder="you@email.com">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Date + Slot picker -->
+              <div class="fg full">
+                <label>Preferred Date</label>
+                <div class="cal-wrap" id="aCalWrap">
+                  <div class="cal-header">
+                    <button type="button" onclick="calNav('a',-1)">&#8592;</button>
+                    <span class="cal-month" id="aCalMonth"></span>
+                    <button type="button" onclick="calNav('a',1)">&#8594;</button>
+                  </div>
+                  <div class="cal-grid" id="aCalGrid"></div>
+                </div>
+                <input type="hidden" id="aDate" name="date">
+                <div id="aDateDisplay" style="font-size:13px;color:var(--blue);font-weight:600;margin-top:6px;min-height:18px"></div>
+              </div>
+              <div class="fg full" id="aSlotWrap" style="display:none">
+                <label>Available Times</label>
+                <div class="slot-grid" id="aSlotGrid"></div>
+                <p class="slot-msg" id="aSlotMsg"></p>
+              </div>
+              <input type="hidden" id="aStartDatetime" value="">
+
+              <!-- Promo (collapsed) -->
+              <button type="button" class="collapse-link" onclick="toggleCollapse('aPromoWrap',this)" style="margin-top:12px">
+                <span>+ Have a promo code?</span>
+              </button>
+              <div id="aPromoWrap" style="display:none;margin-top:10px">
+                <div class="fg">
+                  <div style="display:flex;gap:8px;align-items:flex-start">
+                    <input type="text" id="aPromoCode" placeholder="Enter code" style="text-transform:uppercase;flex:1" autocomplete="off">
+                    <button type="button" id="aPromoApplyBtn" class="btn btn-outline" style="white-space:nowrap;flex-shrink:0" onclick="applyPromoCode('A')">Apply</button>
+                  </div>
+                  <div id="aPromoMsg" style="font-size:13px;margin-top:6px"></div>
+                </div>
+              </div>
+
+              <!-- Notes (collapsed) -->
+              <button type="button" class="collapse-link" onclick="toggleCollapse('aNotesWrap',this)" style="margin-top:10px">
+                <span>+ Add notes or special requests</span>
+              </button>
+              <div id="aNotesWrap" style="display:none;margin-top:10px">
+                <div class="fg">
+                  <textarea id="aNotes" name="notes" placeholder="Anything we should know..."></textarea>
+                </div>
+              </div>
+
+              <!-- SMS consent -->
+              <div class="sms-consent-wrap" style="margin-top:14px">
+                <label>
+                  <input type="checkbox" id="smsConsentA">
+                  <span>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</span>
+                </label>
+              </div>
+
+              <div class="step-nav" style="margin-top:24px">
+                <button type="submit" class="btn btn-primary btn-lg">Request Appointment</button>
+              </div>
+              <p class="form-hint" style="margin-top:12px">We'll confirm your appointment shortly. No commitment required.</p>
+            </form>
+          </div>
+
+          <!-- Path B: New Customer (3-step) -->
+          <div id="pathB" style="display:none">
+            <div class="step-progress">
+              <div class="step-item active" id="bsi1"><div class="step-num">1</div><div class="step-label">Service</div></div>
+              <div class="step-item" id="bsi2"><div class="step-num">2</div><div class="step-label">When &amp; Who</div></div>
+              <div class="step-item" id="bsi3"><div class="step-num">3</div><div class="step-label">Vehicle</div></div>
+            </div>
+            <form id="bookingForm" novalidate>
+              <input type="hidden" id="bPhone" name="phone">
+
+              <!-- Step B1: Service + condition pills + notes -->
+              <div class="step-panel active" id="stepB1">
+                <div class="step-title">What service do you need?</div>
+                <div class="book-svc-grid">
+                  ${svcBookCardsB}
+                </div>
+                <input type="hidden" id="bService" name="service">
+                <div id="b1SvcErr" class="field-error" style="margin-top:8px"></div>
+                <div style="margin-top:20px">
+                  <label style="font-size:14px;font-weight:600;display:block;margin-bottom:4px">Anything we should know? <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+                  <div class="pill-grid">
+                    <button type="button" class="pill-btn" data-cond="Pet hair" onclick="toggleCondPill(this)">Pet hair</button>
+                    <button type="button" class="pill-btn" data-cond="Stains" onclick="toggleCondPill(this)">Stains</button>
+                    <button type="button" class="pill-btn" data-cond="Very dirty" onclick="toggleCondPill(this)">Very dirty</button>
+                    <button type="button" class="pill-btn" data-cond="Odor/smoke" onclick="toggleCondPill(this)">Odor / smoke</button>
+                    <button type="button" class="pill-btn" data-cond="Water spots" onclick="toggleCondPill(this)">Water spots</button>
+                    <button type="button" class="pill-btn" data-cond="Tree sap/tar" onclick="toggleCondPill(this)">Tree sap / tar</button>
+                    <button type="button" class="pill-btn" data-cond="Oxidized paint" onclick="toggleCondPill(this)">Oxidized paint</button>
+                  </div>
+                </div>
+                <button type="button" class="collapse-link" onclick="toggleCollapse('b1NotesWrap',this)" style="margin-top:14px">
+                  <span>+ Add notes or special requests</span>
+                </button>
+                <div id="b1NotesWrap" style="display:none;margin-top:10px">
+                  <div class="fg">
+                    <textarea id="bNotes" name="notes" placeholder="Anything else we should know..."></textarea>
+                  </div>
+                </div>
+                <div class="step-nav">
+                  <button type="button" class="btn btn-primary btn-lg" onclick="nextStepB(1)">Next — When &amp; Who</button>
+                </div>
+              </div>
+
+              <!-- Step B2: Contact + Schedule -->
+              <div class="step-panel" id="stepB2">
+                <div class="step-title">When &amp; how do we reach you?</div>
+                <div class="phone-confirmed" onclick="editEntryPhone(event)">
+                  Phone: <span id="phoneConfirmedVal"></span> ✓<a href="#">Edit</a>
+                </div>
+                <div class="form-grid">
+                  <div class="fg full">
+                    <label for="bName">Full Name *</label>
+                    <input type="text" id="bName" name="name" placeholder="Your full name" required>
+                  </div>
+                  <div class="fg full">
+                    <label for="bEmail">Email Address *</label>
+                    <input type="email" id="bEmail" name="email" placeholder="you@email.com">
+                  </div>
+                  <div class="fg full">
+                    <label for="bCity">Service Location *</label>
+                    <input type="text" id="bCity" name="city" placeholder="Enter your address..." required autocomplete="off">
+                    <div style="font-size:12px;color:var(--muted);margin-top:4px">We come to you — enter your home, office, or wherever you want the detail done.</div>
+                  </div>
+                  <div class="fg full">
+                    <label>Preferred Date</label>
+                    <div class="cal-wrap" id="bCalWrap">
+                      <div class="cal-header">
+                        <button type="button" onclick="calNav('b',-1)">&#8592;</button>
+                        <span class="cal-month" id="bCalMonth"></span>
+                        <button type="button" onclick="calNav('b',1)">&#8594;</button>
+                      </div>
+                      <div class="cal-grid" id="bCalGrid"></div>
+                    </div>
+                    <input type="hidden" id="bDate" name="date">
+                    <div id="bDateDisplay" style="font-size:13px;color:var(--blue);font-weight:600;margin-top:6px;min-height:18px"></div>
+                  </div>
+                  <div class="fg full" id="bSlotWrap" style="display:none">
+                    <label>Available Times</label>
+                    <div class="slot-grid" id="bSlotGrid"></div>
+                    <p class="slot-msg" id="bSlotMsg"></p>
+                  </div>
+                  <input type="hidden" id="bStartDatetime" value="">
+                </div>
+                <div class="step-nav">
+                  <button type="button" class="btn btn-outline btn-lg" onclick="prevStepB(2)">Back</button>
+                  <button type="button" class="btn btn-primary btn-lg" onclick="nextStepB(2)">Next — Your Vehicle</button>
+                </div>
+              </div>
+
+              <!-- Step B3: Vehicle + Promo + SMS consent -->
+              <div class="step-panel" id="stepB3">
+                <div class="step-title">Tell us about your vehicle</div>
+                <div class="form-grid">
+                  <div class="fg">
+                    <label for="make">Vehicle Make *</label>
+                    <select id="make" name="make" required><option value="">Select make...</option></select>
+                  </div>
+                  <div class="fg">
+                    <label for="model">Vehicle Model *</label>
+                    <select id="model" name="model" required disabled><option value="">Select make first...</option></select>
+                  </div>
+                  <div class="fg">
+                    <label for="year">Vehicle Year *</label>
+                    <input type="number" id="year" name="year" placeholder="e.g. 2020" min="1930" max="2027" required>
+                  </div>
+                </div>
+                <button type="button" class="collapse-link" onclick="toggleCollapse('bPromoWrap',this)" style="margin-top:8px">
+                  <span>+ Have a promo code?</span>
+                </button>
+                <div id="bPromoWrap" style="display:none;margin-top:10px">
+                  <div class="fg">
+                    <div style="display:flex;gap:8px;align-items:flex-start">
+                      <input type="text" id="bPromoCode" placeholder="Enter code" style="text-transform:uppercase;flex:1" autocomplete="off">
+                      <button type="button" id="bPromoApplyBtn" class="btn btn-outline" style="white-space:nowrap;flex-shrink:0" onclick="applyPromoCode('B')">Apply</button>
+                    </div>
+                    <div id="bPromoMsg" style="font-size:13px;margin-top:6px"></div>
+                  </div>
+                </div>
+                <!-- SMS consent -->
+                <div class="sms-consent-wrap" style="margin-top:14px">
+                  <label>
+                    <input type="checkbox" id="smsConsentB">
+                    <span>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</span>
+                  </label>
+                </div>
+                <div class="step-nav">
+                  <button type="button" class="btn btn-outline btn-lg" onclick="prevStepB(3)">Back</button>
+                  <button type="submit" class="btn btn-primary btn-lg" id="bSubmitBtn">Request Appointment</button>
+                </div>
+                <p class="form-hint" style="margin-top:12px">We'll confirm your appointment shortly. No commitment required.</p>
+              </div>
+            </form>
+          </div>
+
         </div>
 
-        <!-- Screen: returning customer -->
-        <div id="scrReturning" style="display:none">
-          <p id="bkGreeting" style="font-size:15px;font-weight:600;margin-bottom:16px"></p>
-          <div class="hc-form">
-            <div class="hf-group">
-              <label>Vehicle</label>
-              <div id="bkVehicleDisplay" style="font-size:15px;color:var(--muted);margin-bottom:4px"></div>
-            </div>
-            <div class="hf-group">
-              <label for="bkSvcReturn">Service</label>
-              <select id="bkSvcReturn"><option value="">Choose a service…</option>${svcOptions}</select>
-            </div>
-            <div class="hf-group">
-              <label for="bkDateReturn">Preferred Date</label>
-              <input type="date" id="bkDateReturn">
-            </div>
-            <div id="bkSlotsReturn" style="display:none;margin-bottom:12px"></div>
-            <div class="hf-group">
-              <label for="bkPromoReturn">Promo Code <span class="hf-opt">(optional)</span></label>
-              <input type="text" id="bkPromoReturn" placeholder="Enter code">
-            </div>
-            <div class="hf-group">
-              <label for="bkNotesReturn">Notes <span class="hf-opt">(optional)</span></label>
-              <textarea id="bkNotesReturn" placeholder="Gate code, parking notes, etc."></textarea>
-            </div>
-            <div class="hf-consent">
-              <label>
-                <input type="checkbox" id="bkSmsConsentReturn">
-                <span>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</span>
-              </label>
-            </div>
-            <button class="hf-submit" id="bkReturnBtn" type="button">Confirm Booking</button>
-            <div class="hf-msg" id="bkReturnMsg"></div>
-            <p style="margin-top:12px;font-size:13px;color:var(--muted);text-align:center"><a href="#" id="bkNotMe" style="color:var(--blue)">Not me? Book as new customer →</a></p>
+        <!-- Success screen -->
+        <div class="form-success" id="formSuccess">
+          <div style="font-size:48px;margin-bottom:8px">✅</div>
+          <h3 style="font-family:var(--display);font-size:28px;font-weight:700;margin-bottom:10px">Request Received!</h3>
+          <p style="font-size:15px;color:var(--muted);line-height:1.7;max-width:380px;margin:0 auto 12px">${bizName} received your booking request and will confirm your appointment shortly.</p>
+          <div id="successPricing" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px 20px;margin:16px 0;text-align:left;font-size:15px;line-height:1.7">
+            <div style="font-weight:700;margin-bottom:10px;color:#15803d">Booking Summary</div>
+            <div id="successPricingRows"></div>
+            <div id="successPaymentNote" style="display:none;margin-top:8px;font-size:13px;color:#555">Payment accepted via <strong>cash or Zelle</strong> at time of service.</div>
           </div>
-        </div>
-
-        <!-- Screen: new customer -->
-        <div id="scrNew" style="display:none">
-          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:16px">Book an Appointment</h3>
-          <div class="hc-form">
-            <div class="hf-group">
-              <label for="bkSvcNew">Service</label>
-              <select id="bkSvcNew"><option value="">Choose a service…</option>${svcOptions}</select>
-            </div>
-            <div class="hf-row-2">
-              <div class="hf-group">
-                <label for="bkName">Full Name</label>
-                <input type="text" id="bkName" placeholder="Jane Smith" autocomplete="name">
-              </div>
-              <div class="hf-group">
-                <label for="bkEmail">Email <span class="hf-opt">(optional)</span></label>
-                <input type="email" id="bkEmail" placeholder="jane@email.com" autocomplete="email">
-              </div>
-            </div>
-            <div class="hf-group">
-              <label for="bkAddress">Service Address</label>
-              <input type="text" id="bkAddress" placeholder="123 Main St, Pasadena, CA" autocomplete="street-address">
-            </div>
-            <div class="hf-row-2">
-              <div class="hf-group">
-                <label for="bkDateNew">Preferred Date</label>
-                <input type="date" id="bkDateNew">
-              </div>
-              <div class="hf-group">
-                <label for="bkTime">Preferred Time</label>
-                <select id="bkTime">
-                  <option value="morning">Morning (8am–12pm)</option>
-                  <option value="afternoon">Afternoon (12pm–4pm)</option>
-                  <option value="evening">Evening (4pm–7pm)</option>
-                </select>
-              </div>
-            </div>
-            <div class="hf-group">
-              <label for="bkPromoNew">Promo Code <span class="hf-opt">(optional)</span></label>
-              <input type="text" id="bkPromoNew" placeholder="Enter code">
-            </div>
-            <div class="hf-group">
-              <label for="bkNotesNew">Notes <span class="hf-opt">(optional)</span></label>
-              <textarea id="bkNotesNew" placeholder="Vehicle details, gate code, etc."></textarea>
-            </div>
-            <div class="hf-consent">
-              <label>
-                <input type="checkbox" id="bkSmsConsent">
-                <span>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</span>
-              </label>
-            </div>
-            <button class="hf-submit" id="bkNewBtn" type="button">Book an Appointment</button>
-            <div class="hf-msg" id="bkNewMsg"></div>
+          ${phone ? `<p style="font-size:14px;color:var(--muted)">Questions? Call us at <a href="tel:${phoneBare}" style="color:var(--blue)">${phoneNav}</a>.</p>` : ''}
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+            <button type="button" class="btn btn-outline btn-lg" onclick="addAnotherVehicle()">Add another vehicle?</button>
+            <button type="button" class="btn btn-outline" onclick="resetBookingForm()">Start over</button>
           </div>
-        </div>
-
-        <!-- Screen: success -->
-        <div id="scrSuccess" style="display:none;text-align:center;padding:32px 16px">
-          <div style="font-size:48px;margin-bottom:16px">✅</div>
-          <h3 style="font-family:var(--display);font-size:26px;font-weight:700;margin-bottom:8px">You're Booked!</h3>
-          <p style="color:var(--muted);font-size:15px" id="bkSuccessMsg"></p>
         </div>
       </div>
     </div>
@@ -801,159 +1099,919 @@ ${galleryHtml}
   }
 
   // --- Booking form ---
-  var phoneVal = ''
-  var customerData = null
-  var smsConsentAt = null
+  var CAR_DATA = {
+    'Acura':['ILX','Integra','MDX','NSX','RDX','RLX','TL','TLX','TSX'],
+    'Audi':['A3','A4','A5','A6','A7','A8','e-tron','Q3','Q4 e-tron','Q5','Q7','Q8','R8','RS3','RS5','RS6','RS7','S3','S4','S5','S6','S7','TT'],
+    'BMW':['1 Series','2 Series','3 Series','4 Series','5 Series','6 Series','7 Series','8 Series','i3','i4','i7','iX','M2','M3','M4','M5','M8','X1','X2','X3','X4','X5','X6','X7','XM','Z4'],
+    'Buick':['Enclave','Encore','Encore GX','Envision','LaCrosse','Regal'],
+    'Cadillac':['CT4','CT5','Escalade','Escalade ESV','Lyriq','XT4','XT5','XT6'],
+    'Chevrolet':['Blazer','Bolt EUV','Bolt EV','Camaro','Colorado','Corvette','Equinox','Express','Impala','Malibu','Silverado 1500','Silverado 2500HD','Silverado 3500HD','Suburban','Tahoe','Traverse','Trax'],
+    'Chrysler':['300','Pacifica','Voyager'],
+    'Dodge':['Challenger','Charger','Durango','Grand Caravan','Hornet','Journey','Ram 1500'],
+    'Ford':['Bronco','Bronco Sport','Edge','Escape','Expedition','Explorer','F-150','F-250','F-350','Fusion','Maverick','Mustang','Mustang Mach-E','Ranger','Transit','Transit Connect'],
+    'Genesis':['G70','G80','G90','GV70','GV80'],
+    'GMC':['Acadia','Canyon','Envoy','Sierra 1500','Sierra 2500HD','Sierra 3500HD','Terrain','Yukon','Yukon XL'],
+    'Honda':['Accord','Civic','CR-V','CR-Z','Element','Fit','HR-V','Insight','Odyssey','Passport','Pilot','Prologue','Ridgeline'],
+    'Hyundai':['Elantra','Ioniq','Ioniq 5','Ioniq 6','Kona','Nexo','Palisade','Santa Cruz','Santa Fe','Sonata','Tucson','Venue'],
+    'Infiniti':['Q50','Q60','QX50','QX55','QX60','QX80'],
+    'Jaguar':['E-Pace','F-Pace','F-Type','I-Pace','XE','XF','XJ'],
+    'Jeep':['Cherokee','Compass','Gladiator','Grand Cherokee','Grand Cherokee L','Grand Wagoneer','Renegade','Wagoneer','Wrangler'],
+    'Kia':['Carnival','EV6','EV9','K5','Niro','Seltos','Sorento','Soul','Sportage','Stinger','Telluride'],
+    'Land Rover':['Defender','Discovery','Discovery Sport','Range Rover','Range Rover Evoque','Range Rover Sport','Range Rover Velar'],
+    'Lexus':['ES','GS','GX','IS','LC','LS','LX','NX','RX','RZ','UX'],
+    'Lincoln':['Aviator','Corsair','MKZ','Nautilus','Navigator'],
+    'Lucid':['Air'],
+    'Mazda':['CX-30','CX-5','CX-50','CX-70','CX-90','Mazda2','Mazda3','Mazda6','MX-30','MX-5 Miata'],
+    'Mercedes-Benz':['A-Class','C-Class','CLA','CLS','E-Class','EQB','EQE','EQS','G-Class','GLA','GLB','GLC','GLE','GLS','S-Class','SL','SLK','Sprinter'],
+    'Mitsubishi':['Eclipse Cross','Mirage','Outlander','Outlander PHEV','Outlander Sport'],
+    'Nissan':['Altima','Armada','Frontier','GT-R','Kicks','Leaf','Maxima','Murano','Pathfinder','Rogue','Rogue Sport','Sentra','Titan','Versa','Z'],
+    'Porsche':['718 Boxster','718 Cayman','911','Cayenne','Macan','Panamera','Taycan'],
+    'Ram':['1500','1500 Classic','2500','3500','ProMaster','ProMaster City'],
+    'Rivian':['R1S','R1T','R2'],
+    'Subaru':['Ascent','BRZ','Crosstrek','Forester','Impreza','Legacy','Outback','Solterra','WRX'],
+    'Tesla':['Cybertruck','Model 3','Model S','Model X','Model Y'],
+    'Toyota':['4Runner','86','Avalon','bZ4X','Camry','Corolla','Corolla Cross','Crown','GR86','GR Corolla','GR Supra','Highlander','Land Cruiser','Mirai','Prius','RAV4','RAV4 Prime','Sequoia','Sienna','Tacoma','Tundra','Venza'],
+    'Volkswagen':['Arteon','Atlas','Atlas Cross Sport','Golf','GTI','ID.4','Jetta','Passat','Taos','Tiguan'],
+    'Volvo':['C40 Recharge','S60','S90','V60','V90','XC40','XC60','XC90'],
+    'Other':['Other']
+  };
 
-  function show(id){ ['scrPhone','scrReturning','scrNew','scrSuccess'].forEach(function(s){ document.getElementById(s).style.display = s===id?'':'none' }) }
-  function msg(id, text, isErr){ var el=document.getElementById(id); el.textContent=text; el.className='hf-msg '+(isErr?'hf-error':'hf-success') }
+  var makeEl = document.getElementById('make');
+  var modelEl = document.getElementById('model');
 
-  // Phone input — format as (XXX) XXX-XXXX; restore cursor after value set to avoid position-0 reset
-  var phoneInput = document.getElementById('bkPhone')
-  if (phoneInput) {
-    phoneInput.addEventListener('input', function(){
-      var pos = this.selectionStart
-      var oldLen = this.value.length
-      var digits = this.value.replace(/[^0-9]/g,'').slice(0,10)
-      var f = ''
-      if (digits.length > 0) f = '(' + digits.slice(0,3)
-      if (digits.length >= 4) f += ') ' + digits.slice(3,6)
-      if (digits.length >= 7) f += '-' + digits.slice(6,10)
-      if (this.value !== f) {
-        this.value = f
-        var newPos = pos + (f.length - oldLen)
-        this.setSelectionRange(newPos, newPos)
-      }
-    })
+  Object.keys(CAR_DATA).sort().forEach(function(make) {
+    var opt = document.createElement('option');
+    opt.value = make; opt.textContent = make;
+    makeEl.appendChild(opt);
+  });
+
+  makeEl.addEventListener('change', function() {
+    var models = CAR_DATA[makeEl.value] || [];
+    modelEl.innerHTML = '<option value="">Select model...</option>';
+    models.forEach(function(m) {
+      var opt = document.createElement('option');
+      opt.value = m; opt.textContent = m;
+      modelEl.appendChild(opt);
+    });
+    modelEl.disabled = models.length === 0;
+    modelEl.style.borderColor = '';
+  });
+
+  var _entryPhone = '';
+  var _validatedPromoA = null;
+  var _validatedPromoB = null;
+  var _lastSubmitPayload = null;
+  var _urlPromo = new URLSearchParams(window.location.search).get('promo') || null;
+  var _addingVehicle = false;
+  var _smsConsentAt = null;
+
+  var formContent = document.getElementById('formContent');
+  var formSuccess = document.getElementById('formSuccess');
+
+  var entryPhoneEl = document.getElementById('entryPhone');
+  entryPhoneEl.addEventListener('input', function(e) {
+    var digits = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+    var f = '';
+    if (digits.length > 0) f = '(' + digits.slice(0, 3);
+    if (digits.length >= 4) f += ') ' + digits.slice(3, 6);
+    if (digits.length >= 7) f += '-' + digits.slice(6, 10);
+    e.target.value = f;
+    document.getElementById('entryPhoneErr').textContent = '';
+  });
+  entryPhoneEl.addEventListener('keydown', function(e) {
+    if (e.key === 'Backspace' && entryPhoneEl.value.endsWith(') ')) {
+      e.preventDefault();
+      entryPhoneEl.value = entryPhoneEl.value.slice(0, -2);
+    }
+    if (e.key === 'Enter') { e.preventDefault(); submitPhone(); }
+  });
+
+  window.submitPhone = async function() {
+    var raw = entryPhoneEl.value.replace(/[^0-9]/g, '');
+    var errEl = document.getElementById('entryPhoneErr');
+    var btn = document.getElementById('entryBtn');
+    if (raw.length !== 10) {
+      errEl.textContent = 'Please enter a valid 10-digit US phone number.';
+      return;
+    }
+    _entryPhone = raw;
+    errEl.textContent = '';
+    if (document.getElementById('smsConsentPhone').checked) _smsConsentAt = new Date().toISOString();
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+
+    var done = false;
+    var timeout = setTimeout(function() {
+      if (!done) { done = true; routeToPathB(); }
+    }, 8000);
+
+    try {
+      var r = await fetch(API_BASE + '/api/lookup-customer?phone=' + raw + '&business=' + SLUG);
+      var data = await r.json();
+      if (done) return;
+      done = true;
+      clearTimeout(timeout);
+      if (data.found) { routeToPathA(data); } else { routeToPathB(); }
+    } catch(e) {
+      if (!done) { done = true; clearTimeout(timeout); routeToPathB(); }
+    }
+  };
+
+  function formatDisplayPhone(d) {
+    return d.length === 10 ? '(' + d.slice(0,3) + ') ' + d.slice(3,6) + '-' + d.slice(6) : d;
   }
 
-  // Phone lookup
-  var phoneBtn = document.getElementById('bkPhoneBtn')
-  if (phoneBtn) phoneBtn.addEventListener('click', function(){
-    var raw = document.getElementById('bkPhone').value.replace(/[^0-9]/g,'')
-    if (raw.length < 10) { msg('bkPhoneMsg','Please enter a valid phone number.',true); return }
-    phoneVal = raw
-    if (document.getElementById('bkSmsConsentPhone').checked) smsConsentAt = new Date().toISOString()
-    phoneBtn.disabled = true; phoneBtn.textContent = 'Looking up…'
-    fetch(API_BASE+'/api/lookup-customer?phone='+raw+'&business='+SLUG)
-      .then(function(r){ return r.json() })
-      .then(function(d){
-        phoneBtn.disabled = false; phoneBtn.textContent = 'Continue'
-        if (d.found && d.name) {
-          customerData = d
-          document.getElementById('bkGreeting').textContent = 'Welcome back, '+d.name+'! 👋'
-          var veh = d.vehicles && d.vehicles[0]
-          document.getElementById('bkVehicleDisplay').textContent = veh ? (veh.year+' '+veh.make+' '+veh.model) : 'No vehicle on file'
-          show('scrReturning')
-        } else {
-          show('scrNew')
+  function routeToPathA(data) {
+    document.getElementById('phoneEntry').style.display = 'none';
+    document.getElementById('pathA').style.display = 'block';
+    formContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    var firstName = (data.name || '').split(' ')[0];
+    document.getElementById('pathATitle').textContent = 'Welcome back, ' + firstName + '!';
+
+    document.getElementById('aPhone').value  = '+1' + _entryPhone;
+    document.getElementById('aName').value   = data.name  || '';
+    document.getElementById('aEmail').value  = data.email || '';
+    document.getElementById('aCity').value   = data.city  || '';
+    document.getElementById('aMake').value   = data.make  || '';
+    document.getElementById('aModelH').value = data.model || '';
+    document.getElementById('aYear').value   = data.year  || '';
+
+    document.getElementById('aSummaryName').textContent    = data.name  || '—';
+    document.getElementById('aSummaryPhone').textContent   = formatDisplayPhone(_entryPhone);
+    document.getElementById('aSummaryEmail').textContent   = data.email || 'Not provided';
+    document.getElementById('aSummaryCity').textContent    = data.city  || '—';
+    document.getElementById('aSummaryVehicle').textContent = [data.year, data.make, data.model].filter(Boolean).join(' ') || '—';
+
+    var aMakeEl = document.getElementById('aEditMake');
+    aMakeEl.innerHTML = '<option value="">Select make...</option>';
+    Object.keys(CAR_DATA).sort().forEach(function(m) {
+      var o = document.createElement('option');
+      o.value = m; o.textContent = m;
+      if (m === data.make) o.selected = true;
+      aMakeEl.appendChild(o);
+    });
+    if (data.make) populateAEditModel(data.make, data.model);
+    aMakeEl.addEventListener('change', function() { populateAEditModel(this.value, null); });
+
+    if (data.last_service) {
+      document.querySelectorAll('#pathASvcGrid .book-svc-card').forEach(function(card) {
+        if (card.dataset.service === data.last_service) {
+          card.classList.add('selected');
+          document.getElementById('aService').value = data.last_service;
         }
-      })
-      .catch(function(){ phoneBtn.disabled=false; phoneBtn.textContent='Continue'; show('scrNew') })
-  })
+      });
+    }
 
-  // Not me
-  var notMe = document.getElementById('bkNotMe')
-  if (notMe) notMe.addEventListener('click', function(e){ e.preventDefault(); customerData=null; show('scrNew') })
+    initAddressAutocomplete('aEditCityInput');
 
-  // Slot loader for returning customer
-  var dateReturn = document.getElementById('bkDateReturn')
-  if (dateReturn) dateReturn.addEventListener('change', function(){
-    var svc = document.getElementById('bkSvcReturn').value
-    var date = this.value
-    if (!svc || !date) return
-    var wrap = document.getElementById('bkSlotsReturn')
-    wrap.style.display = ''; wrap.innerHTML = '<p style="font-size:13px;color:var(--muted)">Loading slots…</p>'
-    fetch(API_BASE+'/api/slots?date='+date+'&service='+encodeURIComponent(svc)+'&business='+SLUG)
-      .then(function(r){ return r.json() })
-      .then(function(d){
-        if (!d.slots || !d.slots.length){ wrap.innerHTML='<p style="font-size:13px;color:var(--muted)">No slots available — try another date.</p>'; return }
-        wrap.innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:8px">'+d.slots.map(function(s){
-          return '<button type="button" class="slot-btn" data-slot="'+s+'" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:var(--r);background:#fff;font-size:13px;font-weight:500;cursor:pointer">'+s+'</button>'
-        }).join('')+'</div>'
-        wrap.querySelectorAll('.slot-btn').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            wrap.querySelectorAll('.slot-btn').forEach(function(b){ b.style.borderColor='var(--border)'; b.style.background='#fff' })
-            btn.style.borderColor='var(--blue)'; btn.style.background='var(--blue-light)'
-            wrap.dataset.selected = btn.dataset.slot
-          })
-        })
-      })
-      .catch(function(){ wrap.innerHTML='<p style="font-size:13px;color:var(--muted)">Could not load slots.</p>' })
-  })
+    var svc = new URLSearchParams(window.location.search).get('service');
+    if (svc) {
+      document.querySelectorAll('#pathASvcGrid .book-svc-card').forEach(function(card) {
+        if (card.dataset.service.toLowerCase().indexOf(svc.toLowerCase()) !== -1) card.click();
+      });
+    }
 
-  // Returning customer submit
-  var retBtn = document.getElementById('bkReturnBtn')
-  if (retBtn) retBtn.addEventListener('click', function(){
-    var svc = document.getElementById('bkSvcReturn').value
-    var date = document.getElementById('bkDateReturn').value
-    var slot = (document.getElementById('bkSlotsReturn')||{}).dataset && document.getElementById('bkSlotsReturn').dataset.selected
-    if (!svc || !date) { msg('bkReturnMsg','Please choose a service and date.',true); return }
-    retBtn.disabled=true; retBtn.textContent='Booking…'
-    fetch(API_BASE+'/api/book', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        business_id: SLUG,
-        phone: phoneVal,
-        service: svc,
-        preferred_date: date,
-        preferred_time: slot || '',
-        promo_code: document.getElementById('bkPromoReturn').value.trim(),
-        notes: document.getElementById('bkNotesReturn').value.trim(),
-        sms_consent_at: document.getElementById('bkSmsConsentReturn').checked ? new Date().toISOString() : smsConsentAt
-      })
-    })
-    .then(function(r){ return r.json() })
-    .then(function(d){
-      retBtn.disabled=false; retBtn.textContent='Confirm Booking'
-      if (d.success || d.booking_id) {
-        document.getElementById('bkSuccessMsg').textContent = "We'll send you a confirmation shortly. See you on " + date + "!"
-        show('scrSuccess')
-      } else {
-        msg('bkReturnMsg', d.error || 'Something went wrong. Please try again.', true)
+    renderVehicleGrid(data.all_vehicles || [], '+1' + _entryPhone);
+
+    var rewardBanner = document.getElementById('aRewardBanner');
+    if (rewardBanner) rewardBanner.remove();
+    var codes = data.reward_codes || [];
+    if (codes.length) {
+      var rc = codes[0];
+      var banner = document.createElement('div');
+      banner.id = 'aRewardBanner';
+      banner.style.cssText = 'background:#f3e8ff;border:2px solid #7c3aed;border-radius:10px;padding:14px 16px;margin:16px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap';
+      banner.innerHTML =
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-weight:700;color:#6d28d9;font-size:15px">You have a reward ready!</div>' +
+          '<div style="color:#4c1d95;font-size:13px;margin-top:2px">' + rc.reward_description + '</div>' +
+          '<div style="font-family:monospace;font-size:17px;font-weight:700;color:#7c3aed;letter-spacing:2px;margin-top:4px">' + rc.code + '</div>' +
+        '</div>' +
+        '<button type="button" id="aApplyRewardBtn" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;cursor:pointer;white-space:nowrap;font-size:14px">Apply Reward</button>';
+      var promoToggle = document.querySelector('[onclick="toggleCollapse(\'aPromoWrap\',this)"]');
+      if (promoToggle) promoToggle.parentNode.insertBefore(banner, promoToggle);
+      document.getElementById('aApplyRewardBtn').addEventListener('click', function() {
+        document.getElementById('aPromoCode').value = rc.code;
+        applyPromoCode('A');
+      });
+    }
+
+    if (_urlPromo) {
+      document.getElementById('aPromoCode').value = _urlPromo;
+      applyPromoCode('A');
+      _urlPromo = null;
+    }
+  }
+
+  function selectSvcAByName(svcName) {
+    document.querySelectorAll('#pathASvcGrid .book-svc-card').forEach(function(c) { c.classList.remove('selected'); });
+    document.getElementById('aService').value = '';
+    document.getElementById('pathASvcErr').textContent = '';
+    if (!svcName) return;
+    document.querySelectorAll('#pathASvcGrid .book-svc-card').forEach(function(card) {
+      if (card.dataset.service === svcName) {
+        card.classList.add('selected');
+        document.getElementById('aService').value = svcName;
       }
-    })
-    .catch(function(){ retBtn.disabled=false; retBtn.textContent='Confirm Booking'; msg('bkReturnMsg','Network error. Please try again.',true) })
-  })
+    });
+  }
 
-  // New customer submit
-  var newBtn = document.getElementById('bkNewBtn')
-  if (newBtn) newBtn.addEventListener('click', function(){
-    var svc = document.getElementById('bkSvcNew').value
-    var name = document.getElementById('bkName').value.trim()
-    var address = document.getElementById('bkAddress').value.trim()
-    var date = document.getElementById('bkDateNew').value
-    if (!svc || !name || !address || !date) { msg('bkNewMsg','Please fill in all required fields.',true); return }
-    var consent = document.getElementById('bkSmsConsent').checked
-    newBtn.disabled=true; newBtn.textContent='Sending…'
-    fetch(API_BASE+'/api/book', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        business_id: SLUG,
-        phone: phoneVal,
-        service: svc,
-        name: name,
-        email: document.getElementById('bkEmail').value.trim(),
-        address: address,
-        preferred_date: date,
-        preferred_time: document.getElementById('bkTime').value,
-        promo_code: document.getElementById('bkPromoNew').value.trim(),
-        notes: document.getElementById('bkNotesNew').value.trim(),
-        sms_consent_at: consent ? new Date().toISOString() : smsConsentAt
-      })
-    })
-    .then(function(r){ return r.json() })
-    .then(function(d){
-      newBtn.disabled=false; newBtn.textContent='Book an Appointment'
-      if (d.success || d.booking_id) {
-        document.getElementById('bkSuccessMsg').textContent = "Request received! We'll confirm your " + date + " appointment shortly."
-        show('scrSuccess')
-      } else {
-        msg('bkNewMsg', d.error || 'Something went wrong. Please try again.', true)
+  function renderVehicleGrid(vehicles, phone) {
+    var wrap = document.getElementById('aVehiclePickerWrap');
+    var grid = document.getElementById('aVehicleGrid');
+    grid.innerHTML = '';
+
+    if (vehicles.length <= 1) {
+      wrap.style.display = 'none';
+      return;
+    }
+
+    wrap.style.display = '';
+
+    vehicles.forEach(function(v, i) {
+      var card = document.createElement('div');
+      card.className = 'book-svc-card' + (i === 0 ? ' selected' : '');
+      card.style.position = 'relative';
+      card.innerHTML =
+        '<div class="bsvc-name">' + v.year + ' ' + v.make + '</div>' +
+        '<div class="bsvc-price">' + v.model + '</div>' +
+        '<button type="button" aria-label="Remove vehicle" style="position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;font-size:16px;color:#9ca3af;line-height:1" data-vid="' + v.id + '">×</button>';
+
+      card.addEventListener('click', function(e) {
+        if (e.target.tagName === 'BUTTON') return;
+        grid.querySelectorAll('.book-svc-card').forEach(function(c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        document.getElementById('aMake').value   = v.make;
+        document.getElementById('aModelH').value = v.model;
+        document.getElementById('aYear').value   = v.year;
+        document.getElementById('aSummaryVehicle').textContent = v.year + ' ' + v.make + ' ' + v.model;
+        document.getElementById('aEditVehicle').style.display = 'none';
+        selectSvcAByName(v.last_service || null);
+      });
+
+      card.querySelector('button').addEventListener('click', function(e) {
+        e.stopPropagation();
+        deleteVehicle(v.id, phone, vehicles);
+      });
+
+      grid.appendChild(card);
+
+      if (i === 0) {
+        document.getElementById('aMake').value   = v.make;
+        document.getElementById('aModelH').value = v.model;
+        document.getElementById('aYear').value   = v.year;
+        document.getElementById('aSummaryVehicle').textContent = v.year + ' ' + v.make + ' ' + v.model;
+        selectSvcAByName(v.last_service || null);
       }
-    })
-    .catch(function(){ newBtn.disabled=false; newBtn.textContent='Book an Appointment'; msg('bkNewMsg','Network error. Please try again.',true) })
-  })
+    });
+
+    var otherCard = document.createElement('div');
+    otherCard.className = 'book-svc-card';
+    otherCard.innerHTML = '<div class="bsvc-name">+ Different Vehicle</div><div class="bsvc-desc">Enter make, model &amp; year</div>';
+    otherCard.addEventListener('click', function() {
+      grid.querySelectorAll('.book-svc-card').forEach(function(c) { c.classList.remove('selected'); });
+      otherCard.classList.add('selected');
+      document.getElementById('aMake').value   = '';
+      document.getElementById('aModelH').value = '';
+      document.getElementById('aYear').value   = '';
+      document.getElementById('aSummaryVehicle').textContent = '—';
+      document.getElementById('aEditVehicle').style.display = 'block';
+    });
+    grid.appendChild(otherCard);
+  }
+
+  async function deleteVehicle(vehicleId, phone, currentVehicles) {
+    var digits = phone.replace(/[^0-9]/g, '').slice(-10);
+    try {
+      var res = await fetch(API_BASE + '/api/admin/vehicles?id=' + encodeURIComponent(vehicleId) + '&phone=' + digits, { method: 'DELETE' });
+      var data = await res.json();
+      if (!res.ok) { alert(data.error || 'Could not remove vehicle. Please try again.'); return; }
+      var remaining = data.all_vehicles || [];
+      if (remaining.length === 0) {
+        document.getElementById('aVehiclePickerWrap').style.display = 'none';
+        document.getElementById('aMake').value   = '';
+        document.getElementById('aModelH').value = '';
+        document.getElementById('aYear').value   = '';
+        document.getElementById('aSummaryVehicle').textContent = '—';
+        document.getElementById('aEditVehicle').style.display = 'block';
+      } else if (remaining.length === 1) {
+        document.getElementById('aVehiclePickerWrap').style.display = 'none';
+        var v = remaining[0];
+        document.getElementById('aMake').value   = v.make;
+        document.getElementById('aModelH').value = v.model;
+        document.getElementById('aYear').value   = v.year;
+        document.getElementById('aSummaryVehicle').textContent = v.year + ' ' + v.make + ' ' + v.model;
+        document.getElementById('aEditVehicle').style.display = 'none';
+      } else {
+        renderVehicleGrid(remaining, phone);
+      }
+    } catch (err) {
+      alert('Could not remove vehicle. Please try again.');
+    }
+  }
+
+  function populateAEditModel(make, selected) {
+    var el = document.getElementById('aEditModel');
+    var models = CAR_DATA[make] || [];
+    el.innerHTML = '<option value="">Select model...</option>';
+    models.forEach(function(m) {
+      var o = document.createElement('option');
+      o.value = m; o.textContent = m;
+      if (m === selected) o.selected = true;
+      el.appendChild(o);
+    });
+    el.disabled = models.length === 0;
+  }
+
+  window.selectSvcA = function(card) {
+    document.querySelectorAll('#pathASvcGrid .book-svc-card').forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    document.getElementById('aService').value = card.dataset.service;
+    document.getElementById('pathASvcErr').textContent = '';
+  };
+
+  window.togglePathAEdit = function(field) {
+    var map = { vehicle: 'aEditVehicle', city: 'aEditCity', name: 'aEditName', email: 'aEditEmail', phone: 'aEditPhone' };
+    var wrap = document.getElementById(map[field]);
+    var open = wrap.style.display !== 'none';
+    if (!open) {
+      wrap.style.display = 'block';
+      if (field === 'city')  document.getElementById('aEditCityInput').value = document.getElementById('aCity').value;
+      if (field === 'name')  document.getElementById('aEditNameInput').value  = document.getElementById('aName').value;
+      if (field === 'email') document.getElementById('aEditEmailInput').value = document.getElementById('aEmail').value;
+      if (field === 'phone') document.getElementById('aEditPhoneInput').value = formatDisplayPhone(_entryPhone);
+    } else {
+      wrap.style.display = 'none';
+      if (field === 'vehicle') {
+        var m  = document.getElementById('aEditMake').value;
+        var mo = document.getElementById('aEditModel').value;
+        var y  = document.getElementById('aEditYear').value;
+        if (m)  document.getElementById('aMake').value   = m;
+        if (mo) document.getElementById('aModelH').value = mo;
+        if (y)  document.getElementById('aYear').value   = y;
+        document.getElementById('aSummaryVehicle').textContent = [y,m,mo].filter(Boolean).join(' ') || '—';
+      }
+      if (field === 'city') {
+        var cv = document.getElementById('aEditCityInput').value;
+        if (cv) { document.getElementById('aCity').value = cv; document.getElementById('aSummaryCity').textContent = cv; }
+      }
+      if (field === 'name') {
+        var nv = document.getElementById('aEditNameInput').value;
+        if (nv) { document.getElementById('aName').value = nv; document.getElementById('aSummaryName').textContent = nv; }
+      }
+      if (field === 'email') {
+        var ev = document.getElementById('aEditEmailInput').value;
+        document.getElementById('aEmail').value = ev;
+        document.getElementById('aSummaryEmail').textContent = ev || 'Not provided';
+      }
+      if (field === 'phone') {
+        var raw = document.getElementById('aEditPhoneInput').value.replace(/[^0-9]/g, '').slice(-10);
+        if (raw.length === 10) {
+          _entryPhone = raw;
+          document.getElementById('aPhone').value = '+1' + raw;
+          document.getElementById('aSummaryPhone').textContent = formatDisplayPhone(raw);
+        }
+      }
+    }
+  };
+
+  document.getElementById('formA').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var service = document.getElementById('aService').value;
+    if (!service) {
+      document.getElementById('pathASvcErr').textContent = 'Please select a service.';
+      document.getElementById('pathASvcGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    var submitBtn = e.target.querySelector('[type="submit"]');
+    if (!document.getElementById('aEmail').value.trim()) {
+      var emailEdit = document.getElementById('aEditEmail');
+      if (emailEdit) emailEdit.style.display = 'block';
+      var emailInput = document.getElementById('aEditEmailInput');
+      if (emailInput) { emailInput.style.borderColor = '#ef4444'; emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' }); emailInput.focus(); }
+      return;
+    }
+    var vehicleEditEl = document.getElementById('aEditVehicle');
+    if (vehicleEditEl && vehicleEditEl.style.display !== 'none') {
+      var em = document.getElementById('aEditMake').value;
+      var emo = document.getElementById('aEditModel').value;
+      var ey = document.getElementById('aEditYear').value;
+      if (em)  document.getElementById('aMake').value   = em;
+      if (emo) document.getElementById('aModelH').value = emo;
+      if (ey)  document.getElementById('aYear').value   = ey;
+    }
+    if (!document.getElementById('aMake').value || !document.getElementById('aModelH').value || !document.getElementById('aYear').value) {
+      if (vehicleEditEl) { vehicleEditEl.style.display = 'block'; vehicleEditEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      alert('Please complete your vehicle info (make, model, and year) before submitting.');
+      return;
+    }
+    if (!document.getElementById('aStartDatetime').value) {
+      var aDateEl = document.getElementById('aDate');
+      if (!aDateEl.value) { var aCalEl = document.getElementById('aCalWrap'); aCalEl.style.outline = '2px solid #ef4444'; aCalEl.style.borderRadius = '8px'; aCalEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      else { document.getElementById('aSlotWrap').scrollIntoView({ behavior: 'smooth', block: 'center' }); alert('Please select a time slot.'); }
+      return;
+    }
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    var payload = {
+      business_id:    SLUG,
+      phone:          document.getElementById('aPhone').value,
+      name:           document.getElementById('aName').value,
+      email:          document.getElementById('aEmail').value,
+      city:           document.getElementById('aCity').value,
+      make:           document.getElementById('aMake').value,
+      model:          document.getElementById('aModelH').value,
+      year:           document.getElementById('aYear').value,
+      service:        service,
+      notes:          document.getElementById('aNotes') ? document.getElementById('aNotes').value || null : null,
+      start_datetime: document.getElementById('aStartDatetime').value || null,
+      promo_code:     _validatedPromoA ? _validatedPromoA.code : null,
+      sms_consent_at: document.getElementById('smsConsentA').checked ? new Date().toISOString() : _smsConsentAt
+    };
+    await submitBooking(payload, submitBtn);
+  });
+
+  function routeToPathB() {
+    document.getElementById('phoneEntry').style.display = 'none';
+    document.getElementById('pathB').style.display = 'block';
+    document.getElementById('bPhone').value = '+1' + _entryPhone;
+    document.getElementById('phoneConfirmedVal').textContent = formatDisplayPhone(_entryPhone);
+    _addingVehicle = false;
+    showStepB(1);
+    formContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (_urlPromo) {
+      document.getElementById('bPromoCode').value = _urlPromo;
+      applyPromoCode('B');
+      _urlPromo = null;
+    }
+    var svc = new URLSearchParams(window.location.search).get('service');
+    if (svc) {
+      document.querySelectorAll('#stepB1 .book-svc-card').forEach(function(card) {
+        if (card.dataset.service.toLowerCase().indexOf(svc.toLowerCase()) !== -1) card.click();
+      });
+    }
+  }
+
+  window.editEntryPhone = function(e) {
+    if (e) e.preventDefault();
+    document.getElementById('pathA').style.display = 'none';
+    document.getElementById('pathB').style.display = 'none';
+    document.getElementById('phoneEntry').style.display = 'block';
+    document.getElementById('entryBtn').disabled = false;
+    document.getElementById('entryBtn').textContent = 'Get Started';
+    document.getElementById('entryMsg').textContent = '';
+  };
+
+  window.selectSvcB = function(card) {
+    document.querySelectorAll('#stepB1 .book-svc-card').forEach(function(c) { c.classList.remove('selected'); });
+    card.classList.add('selected');
+    document.getElementById('bService').value = card.dataset.service;
+    document.getElementById('b1SvcErr').textContent = '';
+  };
+
+  function showStepB(n) {
+    document.querySelectorAll('#pathB .step-panel').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('stepB' + n).classList.add('active');
+    [1,2,3].forEach(function(i) {
+      var si = document.getElementById('bsi' + i);
+      si.classList.remove('active','done');
+      if (i < n) si.classList.add('done');
+      if (i === n) si.classList.add('active');
+    });
+    formContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (n === 2) initAddressAutocomplete('bCity');
+  }
+
+  function validateStepB(n) {
+    if (n === 1) {
+      if (!document.getElementById('bService').value) {
+        document.getElementById('b1SvcErr').textContent = 'Please select a service.';
+        document.getElementById('stepB1').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return false;
+      }
+      return true;
+    }
+    if (n === 2) {
+      var fields = [document.getElementById('bName'), document.getElementById('bEmail'), document.getElementById('bCity')];
+      var ok = true;
+      fields.forEach(function(f) {
+        f.style.borderColor = '';
+        if (!f.value.trim()) { f.style.borderColor = '#ef4444'; ok = false; }
+      });
+      if (!ok) {
+        var first = fields.filter(function(f) { return !f.value.trim(); })[0];
+        if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return ok;
+    }
+    if (n === 3) {
+      var mEl = document.getElementById('make');
+      var moEl = document.getElementById('model');
+      var yEl = document.getElementById('year');
+      var ok3 = true;
+      [mEl, moEl].forEach(function(f) { f.style.borderColor = ''; if (!f.value.trim()) { f.style.borderColor = '#ef4444'; ok3 = false; } });
+      yEl.style.borderColor = '';
+      var yr = parseInt(yEl.value, 10);
+      if (!yr || yr < 1980 || yr > 2027) { yEl.style.borderColor = '#ef4444'; ok3 = false; }
+      if (!ok3) {
+        var firstErr = [mEl, moEl, yEl].filter(function(f) { return f.style.borderColor === '#ef4444'; })[0];
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return ok3;
+    }
+    return true;
+  }
+
+  window.nextStepB = function(current) {
+    if (!validateStepB(current)) return;
+    showStepB(current + 1);
+  };
+
+  window.prevStepB = function(current) {
+    showStepB(current - 1);
+  };
+
+  document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!validateStepB(3)) return;
+    if (!document.getElementById('bStartDatetime').value) {
+      var bDateEl = document.getElementById('bDate');
+      if (!bDateEl.value) { var bCalEl = document.getElementById('bCalWrap'); bCalEl.style.outline = '2px solid #ef4444'; bCalEl.style.borderRadius = '8px'; bCalEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      else { document.getElementById('bSlotWrap').scrollIntoView({ behavior: 'smooth', block: 'center' }); alert('Please select a time slot.'); }
+      return;
+    }
+    var submitBtn = document.getElementById('bSubmitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    var condition = Array.prototype.slice.call(document.querySelectorAll('#stepB1 .pill-btn.selected[data-cond]')).map(function(b){ return b.dataset.cond; });
+    var payload = {
+      business_id:    SLUG,
+      phone:          document.getElementById('bPhone').value,
+      name:           document.getElementById('bName').value,
+      email:          document.getElementById('bEmail').value,
+      city:           document.getElementById('bCity').value,
+      make:           document.getElementById('make').value,
+      model:          document.getElementById('model').value,
+      year:           document.getElementById('year').value,
+      service:        document.getElementById('bService').value,
+      condition:      condition,
+      notes:          document.getElementById('bNotes') ? document.getElementById('bNotes').value || null : null,
+      start_datetime: document.getElementById('bStartDatetime').value || null,
+      promo_code:     _validatedPromoB ? _validatedPromoB.code : null,
+      sms_consent_at: document.getElementById('smsConsentB').checked ? new Date().toISOString() : _smsConsentAt
+    };
+    await submitBooking(payload, submitBtn);
+  });
+
+  async function submitBooking(payload, submitBtn) {
+    _lastSubmitPayload = payload;
+    try {
+      var r = await fetch(API_BASE + '/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      var data = await r.json();
+      if (r.status === 409) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request Appointment';
+        alert('That time slot was just booked by someone else. Please pick a different time.');
+        return;
+      }
+      if (!r.ok) throw new Error(data.error || 'error');
+
+      var rowsEl = document.getElementById('successPricingRows');
+      var paymentEl = document.getElementById('successPaymentNote');
+      var rows = '<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #bbf7d0">';
+      rows += '<div><strong>' + payload.name + '</strong> &nbsp;&middot;&nbsp; ' + formatDisplayPhone(payload.phone.replace(/^\+1/, '')) + '</div>';
+      if (payload.email) rows += '<div style="color:#555;font-size:13px">' + payload.email + '</div>';
+      if (payload.make) rows += '<div style="margin-top:4px">' + payload.year + ' ' + payload.make + ' ' + payload.model + '</div>';
+      if (payload.city) rows += '<div style="font-size:13px;color:#555">' + payload.city + '</div>';
+      if (payload.start_datetime) rows += '<div style="font-size:13px;color:#555;margin-top:2px">Appointment: ' + new Date(payload.start_datetime).toLocaleString('en-US', { weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit', timeZone:'America/Los_Angeles' }) + '</div>';
+      rows += '</div>';
+      if (data.total != null) {
+        if (data.discount > 0) {
+          rows += '<div>' + payload.service + ': <strong>$' + data.base_price + '</strong></div>';
+          rows += '<div>Promo <span style="font-family:monospace;font-weight:600">' + data.promo_code + '</span> (' + data.promo_label + '): <strong style="color:#16a34a">-$' + data.discount + '</strong></div>';
+          rows += '<div style="border-top:1px solid #bbf7d0;margin-top:6px;padding-top:6px;font-size:16px">Total due: <strong>$' + data.total + '</strong></div>';
+        } else {
+          rows += '<div>' + payload.service + ': <strong>$' + data.total + '</strong></div>';
+        }
+        rows += '<div style="font-size:13px;color:#555;margin-top:4px">Final price may vary by vehicle size and condition.</div>';
+        paymentEl.style.display = '';
+      } else {
+        rows += '<div style="font-size:13px;color:#555">' + payload.service + ' — we\'ll confirm pricing when we reach out.</div>';
+      }
+      rowsEl.innerHTML = rows;
+      formContent.style.display = 'none';
+      formSuccess.classList.add('show');
+      formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch(err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Request Appointment';
+      alert('Something went wrong. Please try again or call us directly.');
+    }
+  }
+
+  window.addAnotherVehicle = function() {
+    if (!_lastSubmitPayload) { resetBookingForm(); return; }
+    formSuccess.classList.remove('show');
+    formContent.style.display = '';
+    document.getElementById('pathA').style.display = 'none';
+    document.getElementById('phoneEntry').style.display = 'none';
+    document.getElementById('pathB').style.display = 'block';
+    document.getElementById('bookingForm').reset();
+    document.getElementById('bPhone').value = _lastSubmitPayload.phone;
+    document.getElementById('bName').value  = _lastSubmitPayload.name;
+    document.getElementById('bEmail').value = _lastSubmitPayload.email || '';
+    document.getElementById('bCity').value  = _lastSubmitPayload.city;
+    document.getElementById('phoneConfirmedVal').textContent = formatDisplayPhone(_entryPhone);
+    document.querySelectorAll('#stepB1 .book-svc-card').forEach(function(c){ c.classList.remove('selected'); });
+    document.getElementById('bService').value = '';
+    document.querySelectorAll('#stepB1 .pill-btn').forEach(function(p){ p.classList.remove('selected'); });
+    document.getElementById('bDate').value = '';
+    _calState.b.selected = null;
+    renderCal('b');
+    document.getElementById('bDateDisplay').textContent = '';
+    document.getElementById('bSlotWrap').style.display = 'none';
+    document.getElementById('bStartDatetime').value = '';
+    _validatedPromoB = null;
+    makeEl.value = '';
+    modelEl.innerHTML = '<option value="">Select make first...</option>';
+    modelEl.disabled = true;
+    document.getElementById('year').value = '';
+    _addingVehicle = true;
+    showStepB(1);
+    formContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  window.resetBookingForm = function() {
+    formContent.style.display = '';
+    formSuccess.classList.remove('show');
+    document.getElementById('pathA').style.display = 'none';
+    document.getElementById('pathB').style.display = 'none';
+    document.getElementById('phoneEntry').style.display = 'block';
+    document.getElementById('entryPhone').value = '';
+    document.getElementById('entryBtn').disabled = false;
+    document.getElementById('entryBtn').textContent = 'Get Started';
+    document.getElementById('entryMsg').textContent = '';
+    document.getElementById('entryPhoneErr').textContent = '';
+    _entryPhone = '';
+    _smsConsentAt = null;
+    _validatedPromoA = null;
+    _validatedPromoB = null;
+    document.getElementById('aSlotWrap').style.display = 'none';
+    document.getElementById('aStartDatetime').value = '';
+    document.getElementById('bSlotWrap').style.display = 'none';
+    document.getElementById('bStartDatetime').value = '';
+    _lastSubmitPayload = null;
+    _addingVehicle = false;
+    document.getElementById('bookingForm').reset();
+    modelEl.innerHTML = '<option value="">Select make first...</option>';
+    modelEl.disabled = true;
+    formContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  var _workingDays = null;
+
+  (async function loadWorkingDays() {
+    try {
+      var res = await fetch(API_BASE + '/api/working-days?business=' + SLUG);
+      var data = await res.json();
+      _workingDays = new Set(data.days || []);
+    } catch(e) {
+      _workingDays = new Set([0,1,2,3,4,5,6]);
+    }
+    renderCal('a');
+    renderCal('b');
+  })();
+
+  var _calState = {
+    a: { year: null, month: null, selected: null },
+    b: { year: null, month: null, selected: null }
+  };
+
+  (function initCalState() {
+    var now = new Date();
+    _calState.a.year = now.getFullYear();
+    _calState.a.month = now.getMonth();
+    _calState.b.year = now.getFullYear();
+    _calState.b.month = now.getMonth();
+  })();
+
+  function renderCal(prefix) {
+    var state = _calState[prefix];
+    var monthEl = document.getElementById(prefix + 'CalMonth');
+    var gridEl  = document.getElementById(prefix + 'CalGrid');
+    if (!monthEl || !gridEl) return;
+
+    var year = state.year, month = state.month;
+    var now = new Date();
+    var todayStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+
+    monthEl.textContent = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    var html = '<div class="cal-dow">Su</div><div class="cal-dow">Mo</div><div class="cal-dow">Tu</div><div class="cal-dow">We</div><div class="cal-dow">Th</div><div class="cal-dow">Fr</div><div class="cal-dow">Sa</div>';
+
+    var firstDay = new Date(year, month, 1).getDay();
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (var i = 0; i < firstDay; i++) {
+      html += '<div class="cal-day cal-empty"></div>';
+    }
+
+    for (var d = 1; d <= daysInMonth; d++) {
+      var dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+      var dow = new Date(year, month, d).getDay();
+      var cls = 'cal-day';
+      if (dateStr < todayStr) cls += ' cal-past';
+      else if (_workingDays !== null && !_workingDays.has(dow)) cls += ' cal-off';
+      if (dateStr === todayStr) cls += ' cal-today';
+      if (state.selected === dateStr) cls += ' cal-selected';
+      html += '<div class="' + cls + '" data-date="' + dateStr + '" onclick="calPickDay(\'' + prefix + '\',\'' + dateStr + '\',this)">' + d + '</div>';
+    }
+
+    gridEl.innerHTML = html;
+  }
+
+  window.calNav = function(prefix, dir) {
+    var state = _calState[prefix];
+    state.month += dir;
+    if (state.month > 11) { state.month = 0; state.year++; }
+    if (state.month < 0)  { state.month = 11; state.year--; }
+    var now = new Date();
+    if (state.year < now.getFullYear() || (state.year === now.getFullYear() && state.month < now.getMonth())) {
+      state.month = now.getMonth(); state.year = now.getFullYear();
+    }
+    renderCal(prefix);
+  };
+
+  window.calPickDay = function(prefix, dateStr, el) {
+    if (!el || el.classList.contains('cal-off') || el.classList.contains('cal-past')) return;
+    _calState[prefix].selected = dateStr;
+    renderCal(prefix);
+    document.getElementById(prefix + 'Date').value = dateStr;
+    var calWrap = document.getElementById(prefix + 'CalWrap');
+    if (calWrap) calWrap.style.outline = '';
+    var display = document.getElementById(prefix + 'DateDisplay');
+    if (display) {
+      var pd = new Date(dateStr + 'T12:00:00');
+      display.textContent = pd.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+    }
+    if (prefix === 'a') fetchSlotsA();
+    else fetchSlotsB();
+  };
+
+  function renderSlots(slots, gridId, msgId, hiddenId) {
+    var grid = document.getElementById(gridId);
+    var msg  = document.getElementById(msgId);
+    var hidden = document.getElementById(hiddenId);
+    hidden.value = '';
+    grid.innerHTML = '';
+    if (!slots || slots.length === 0) {
+      msg.textContent = 'No available times for this date. Try another day.';
+      return;
+    }
+    msg.textContent = '';
+    slots.forEach(function(iso) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'slot-btn';
+      btn.textContent = new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Los_Angeles' });
+      btn.addEventListener('click', function() {
+        grid.querySelectorAll('.slot-btn').forEach(function(b){ b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        hidden.value = iso;
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  window.fetchSlotsA = async function() {
+    var date = document.getElementById('aDate').value;
+    var service = document.getElementById('aService').value;
+    var wrap = document.getElementById('aSlotWrap');
+    document.getElementById('aStartDatetime').value = '';
+    if (!date) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    document.getElementById('aSlotGrid').innerHTML = '<p class="slot-msg">Loading…</p>';
+    document.getElementById('aSlotMsg').textContent = '';
+    if (!service) { document.getElementById('aSlotGrid').innerHTML = ''; document.getElementById('aSlotMsg').textContent = 'Select a service above first.'; return; }
+    var res = await fetch(API_BASE + '/api/slots?date=' + date + '&service=' + encodeURIComponent(service) + '&business=' + SLUG);
+    var data = await res.json();
+    renderSlots(data.slots, 'aSlotGrid', 'aSlotMsg', 'aStartDatetime');
+  };
+
+  window.fetchSlotsB = async function() {
+    var date = document.getElementById('bDate').value;
+    var service = document.getElementById('bService').value;
+    var wrap = document.getElementById('bSlotWrap');
+    document.getElementById('bStartDatetime').value = '';
+    if (!date) { wrap.style.display = 'none'; return; }
+    wrap.style.display = 'block';
+    document.getElementById('bSlotGrid').innerHTML = '<p class="slot-msg">Loading…</p>';
+    document.getElementById('bSlotMsg').textContent = '';
+    if (!service) { document.getElementById('bSlotGrid').innerHTML = ''; document.getElementById('bSlotMsg').textContent = 'Select a service above first.'; return; }
+    var res = await fetch(API_BASE + '/api/slots?date=' + date + '&service=' + encodeURIComponent(service) + '&business=' + SLUG);
+    var data = await res.json();
+    renderSlots(data.slots, 'bSlotGrid', 'bSlotMsg', 'bStartDatetime');
+  };
+
+  window.toggleCondPill = function(btn) { btn.classList.toggle('selected'); };
+
+  window.toggleCollapse = function(id, btn) {
+    var el = document.getElementById(id);
+    var wasOpen = el.style.display !== 'none';
+    el.style.display = wasOpen ? 'none' : 'block';
+    var span = btn.querySelector('span');
+    if (span) span.textContent = wasOpen
+      ? span.textContent.replace('–', '+')
+      : span.textContent.replace('+', '–');
+  };
+
+  document.querySelectorAll('#bookingForm input, #bookingForm select, #bookingForm textarea, #formA input, #formA select, #formA textarea').forEach(function(f) {
+    f.addEventListener('input', function() { this.style.borderColor = ''; });
+  });
+
+  window.applyPromoCode = async function(path) {
+    var codeEl   = document.getElementById(path === 'A' ? 'aPromoCode' : 'bPromoCode');
+    var msgEl    = document.getElementById(path === 'A' ? 'aPromoMsg'  : 'bPromoMsg');
+    var applyBtn = document.getElementById(path === 'A' ? 'aPromoApplyBtn' : 'bPromoApplyBtn');
+    var code    = codeEl.value.trim().toUpperCase();
+    var phone   = document.getElementById(path === 'A' ? 'aPhone'   : 'bPhone').value;
+    var service = document.getElementById(path === 'A' ? 'aService' : 'bService').value;
+    if (!code) { msgEl.innerHTML = ''; return; }
+    applyBtn.disabled = true;
+    applyBtn.textContent = 'Checking…';
+    msgEl.innerHTML = '';
+    try {
+      var r = await fetch(API_BASE + '/api/voice/validate-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: code, caller_phone: phone || '0000000000', business_id: SLUG, service: service }),
+      });
+      var data = await r.json();
+      if (data.valid) {
+        var promoObj = Object.assign({}, data, { code: code });
+        if (path === 'A') _validatedPromoA = promoObj; else _validatedPromoB = promoObj;
+        var label = data.discount_type === 'percent' ? data.discount_value + '% off' : '$' + data.discount_value + ' off';
+        msgEl.innerHTML = '<span style="color:#16a34a;font-weight:600">✓ ' + code + ' — ' + label + ' applied</span>';
+      } else {
+        if (path === 'A') _validatedPromoA = null; else _validatedPromoB = null;
+        msgEl.innerHTML = '<span style="color:#dc2626">' + (data.reason || "This code isn't valid. Check the code and try again.") + '</span>';
+      }
+    } catch(e) {
+      msgEl.innerHTML = '<span style="color:#dc2626">Could not validate code. Try again.</span>';
+    }
+    applyBtn.disabled = false;
+    applyBtn.textContent = 'Apply';
+  };
+
+  ['aPromoCode','bPromoCode'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function() { this.value = this.value.toUpperCase().replace(/\s+/g,''); });
+  });
+
+  var _placesLoaded = false;
+  var _placesQueue = [];
+
+  function initAddressAutocomplete(fieldId) {
+    var input = document.getElementById(fieldId);
+    if (!input) return;
+    if (_placesLoaded) { attachAutocomplete(input); return; }
+    _placesQueue.push(input);
+    if (_placesQueue.length > 1) return;
+    fetch(API_BASE + '/api/maps-key').then(function(r){ return r.json(); }).then(function(d) {
+      if (!d.mapsKey) return;
+      window.__addressAutocompleteReady = function() {
+        _placesLoaded = true;
+        _placesQueue.forEach(function(el) { attachAutocomplete(el); });
+        _placesQueue = [];
+      };
+      var script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + d.mapsKey + '&libraries=places&callback=__addressAutocompleteReady';
+      script.async = true;
+      document.head.appendChild(script);
+    }).catch(function(){});
+  }
+
+  function attachAutocomplete(input) {
+    if (input.dataset.acAttached) return;
+    input.dataset.acAttached = '1';
+    try {
+      var ac = new google.maps.places.Autocomplete(input, {
+        types: ['address'],
+        componentRestrictions: { country: 'us' },
+        fields: ['formatted_address'],
+      });
+      ac.addListener('place_changed', function() {
+        var place = ac.getPlace();
+        if (place.formatted_address) input.value = place.formatted_address;
+      });
+    } catch(e) {}
+  }
 
   // --- Chat widget ---
   var bubble = document.getElementById('chatBubble')

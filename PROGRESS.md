@@ -5,6 +5,50 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
+## Session 87 — 2026-06-30
+
+### CURRENT PHASE: Phase 5 — Booking form full port from luis-mobile-detailing.vercel.app
+### LAST COMPLETED: Root cause investigation of booking form. No code written yet — plan confirmed, ready to build.
+### NEXT: Port full booking form from `Luis Mobile Detail/index.html` into `templates/bold-dark.js`. Only the booking form section changes. See handoff prompt below.
+
+---
+
+### What Was Done (Session 87)
+
+**Root cause investigation — booking form on heyconnie.co/luis-mobile-detail:**
+- Confirmed `businesses.base_url` = `https://heyconnie.co` (not the old vercel URL — not the bug)
+- Confirmed `customers` row for Andrew: `phone = +14152794984`, `business_id = luis-mobile-detail` ✓
+- Live API test: `GET /api/lookup-customer?phone=4152794984&business=luis-mobile-detail` returns `found: true`, `name: Andrew Strauss`, `all_vehicles: [Acura ILX, BMW 1 Series, Tesla Model Y]` ✓
+- **Root cause confirmed:** The API works perfectly. The bug is 100% in `templates/bold-dark.js` — the heyconnie booking form is a stripped-down version that:
+  - Reads `d.vehicles` (undefined) instead of `d.all_vehicles`
+  - Has no vehicle picker grid
+  - Has no inline edit fields (vehicle, name, email, phone, location)
+  - Uses `<input type="date">` instead of the custom calendar widget
+  - Slot fetch is not wired to calendar date pick
+  - Missing CAR_DATA, step progress indicator, promo/notes collapse, reward banner, success screen
+
+**Decision made:**
+- Port the entire booking form section from `Luis Mobile Detail/index.html` into `templates/bold-dark.js`
+- Exact feature parity, zero deviation from the working old site
+- Only the booking form section changes — nav, hero, services, gallery, footer, all other CSS/JS unchanged
+- CAR_DATA object ports over into bold-dark.js
+- All hardcoded slugs/URLs in old site become `${SLUG}` and `${API_BASE}` template vars
+
+### What's Working / Verified
+- ✅ `GET /api/lookup-customer` — returns correct data for Andrew's phone
+- ✅ `DELETE /api/admin/vehicles` — endpoint exists in heyconnie (`api/admin/vehicles.js`)
+- ✅ `GET /api/working-days` — exists, used by old site calendar
+- ✅ `POST /api/book` — works (existing)
+- ✅ `businesses.base_url` = `https://heyconnie.co` for luis-mobile-detail
+
+### What's NOT Done Yet
+- ❌ Booking form port — no code written
+- ☐ Phone formatter on real device
+- ☐ `sms_consent_at` column in bookings table — never confirmed exists
+- ☐ `support@heyconnie.co` inbox — manual action from Andrew
+
+---
+
 ## Session 86 — 2026-06-30
 
 ### CURRENT PHASE: Phase 5 — Website Builder pixel-perfect match + A2P SMS compliance
