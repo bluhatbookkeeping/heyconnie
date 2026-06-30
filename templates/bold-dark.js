@@ -258,7 +258,7 @@ function renderBoldDark({ business, services }) {
     .hc-form .hf-chip-wrap input[type=radio]:checked + .hf-chip{border-color:var(--blue);background:var(--blue-light);color:var(--blue);font-weight:600}
     .hc-form .hf-consent{margin:8px 0 4px}
     .hc-form .hf-consent label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;width:100%}
-    .hc-form .hf-consent input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--blue);cursor:pointer}
+    .hc-form .hf-consent input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--blue);cursor:pointer;appearance:checkbox;-webkit-appearance:checkbox;background:none;border:none;padding:0}
     .hc-form .hf-consent span{font-size:.78rem;color:var(--muted);line-height:1.5;font-weight:400}
     .hc-form .hf-consent a{color:var(--blue);text-decoration:underline}
     .hc-form .hf-submit{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:700;cursor:pointer;margin-top:20px;transition:all .2s;font-family:var(--body)}
@@ -811,23 +811,17 @@ ${galleryHtml}
   function show(id){ ['scrPhone','scrReturning','scrNew','scrSuccess'].forEach(function(s){ document.getElementById(s).style.display = s===id?'':'none' }) }
   function msg(id, text, isErr){ var el=document.getElementById(id); el.textContent=text; el.className='hf-msg '+(isErr?'hf-error':'hf-success') }
 
-  // Phone input — digits only, auto-format (XXX) XXX-XXXX
+  // Phone input — format to (XXX) XXX-XXXX, digits only
   var phoneInput = document.getElementById('bkPhone')
   if (phoneInput) {
-    phoneInput.addEventListener('keydown', function(e){
-      var allow = [8,9,13,27,46,37,38,39,40,35,36] // backspace, tab, enter, esc, delete, arrows, home, end
-      if (allow.indexOf(e.keyCode) !== -1) return
-      if ((e.ctrlKey || e.metaKey) && [65,67,86,88].indexOf(e.keyCode) !== -1) return // ctrl A/C/V/X
-      var isDigit = (e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)
-      if (!isDigit) e.preventDefault()
-    })
+    phoneInput.setAttribute('maxlength', '14')
     phoneInput.addEventListener('input', function(){
       var digits = this.value.replace(/\D/g,'').slice(0,10)
       var fmt = ''
       if (digits.length > 0) fmt = '(' + digits.slice(0,3)
       if (digits.length >= 4) fmt += ') ' + digits.slice(3,6)
       if (digits.length >= 7) fmt += '-' + digits.slice(6,10)
-      this.value = fmt
+      if (this.value !== fmt) this.value = fmt
     })
   }
 
