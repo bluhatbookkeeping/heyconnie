@@ -1701,7 +1701,7 @@ ${galleryHtml}
         rows += '<div style="font-size:13px;color:#555;margin-top:4px">Final price may vary by vehicle size and condition.</div>';
         paymentEl.style.display = '';
       } else {
-        rows += "<div style=\"font-size:13px;color:#555\">" + payload.service + " — we'll confirm pricing when we reach out.</div>";
+        rows += '<div style="font-size:13px;color:#555">' + payload.service + ' — pricing will be confirmed when we reach out.</div>';
       }
       rowsEl.innerHTML = rows;
       formContent.style.display = 'none';
