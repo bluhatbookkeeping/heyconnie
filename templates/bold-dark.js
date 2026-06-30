@@ -90,7 +90,7 @@ function renderBoldDark({ business, services }) {
             : `<div class="ig-cell">${inner}</div>`
         }).join('')}
       </div>
-      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">View Instagram &mdash; @${escHtml(igHandle)}</a></div>` : ''}
+      ${instagram ? `<div style="text-align:center;margin-top:24px"><a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-primary btn-lg">See our Instagram @${escHtml(igHandle)}</a></div>` : ''}
     </div>
   </section>` : ''
 
@@ -410,7 +410,7 @@ function renderBoldDark({ business, services }) {
         <li><a href="#services">Services</a></li>
         <li><a href="#pricing">Pricing</a></li>
         <li><a href="#book">Book Appointment</a></li>
-        ${instagram ? `<li><a href="${escHtml(instagram)}" target="_blank" rel="noopener">Instagram</a></li>` : ''}
+        ${instagram ? `<li><a href="${escHtml(instagram)}" target="_blank" rel="noopener">See us on Instagram</a></li>` : ''}
         <li><a href="#book">Contact</a></li>
       </ul>
       <div class="nav-right">
@@ -426,7 +426,7 @@ function renderBoldDark({ business, services }) {
     <a href="#services">Services</a>
     ${gallery.length ? '<a href="#gallery">Our Work</a>' : ''}
     <a href="#book">Book Appointment</a>
-    ${instagram ? `<a href="${escHtml(instagram)}" target="_blank" rel="noopener">Instagram</a>` : ''}
+    ${instagram ? `<a href="${escHtml(instagram)}" target="_blank" rel="noopener">See us on Instagram</a>` : ''}
     <div class="mob-cta">
       ${phone ? `<a href="tel:${phoneBare}" class="btn btn-primary btn-full" style="justify-content:center">Call Now — ${phoneFmt}</a>` : ''}
       <a href="#book" class="btn btn-outline btn-full" style="justify-content:center">Book Appointment</a>
@@ -449,10 +449,10 @@ function renderBoldDark({ business, services }) {
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
           Call Now
         </a>` : ''}
-        <a href="#book" class="btn btn-outline-white btn-lg">Request an Appointment</a>
+        <a href="#book" class="btn btn-outline-white btn-lg">Book an Appointment</a>
         ${instagram ? `<a href="${escHtml(instagram)}" target="_blank" rel="noopener" class="btn btn-outline-white btn-lg">
           <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-          Instagram
+          See us on Instagram
         </a>` : ''}
       </div>
       ${phone ? `<div class="hero-phone">
@@ -536,7 +536,7 @@ ${svcs.length ? `
       <p style="font-size:16px;color:var(--muted);margin-bottom:18px">Ready to get a quote for your vehicle?</p>
       <div class="btn-group" style="justify-content:center">
         <a href="tel:${phoneBare}" class="btn btn-primary">Call for a Quote</a>
-        <a href="#book" class="btn btn-outline">Request Appointment Online</a>
+        <a href="#book" class="btn btn-outline">Book an Appointment</a>
       </div>
     </div>
   </div>
@@ -595,7 +595,7 @@ ${galleryHtml}
             <div class="hf-msg" id="bkPhoneMsg"></div>
             <div class="hf-consent" style="margin-top:14px;text-align:left">
               <input type="checkbox" id="bkSmsConsentPhone">
-              <p>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy" target="_blank">Privacy Policy</a>.</p>
+              <label for="bkSmsConsentPhone">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms?b=${slug}" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy?b=${slug}" target="_blank">Privacy Policy</a>.</label>
             </div>
             ${phone ? `<p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneNav}</a></p>` : ''}
           </div>
@@ -628,7 +628,7 @@ ${galleryHtml}
             </div>
             <div class="hf-consent">
               <input type="checkbox" id="bkSmsConsentReturn">
-              <p>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy" target="_blank">Privacy Policy</a>.</p>
+              <label for="bkSmsConsentReturn">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms?b=${slug}" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy?b=${slug}" target="_blank">Privacy Policy</a>.</label>
             </div>
             <button class="hf-submit" id="bkReturnBtn" type="button">Confirm Booking</button>
             <div class="hf-msg" id="bkReturnMsg"></div>
@@ -638,7 +638,7 @@ ${galleryHtml}
 
         <!-- Screen: new customer -->
         <div id="scrNew" style="display:none">
-          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:16px">Request an Appointment</h3>
+          <h3 style="font-family:var(--display);font-size:22px;font-weight:700;margin-bottom:16px">Book an Appointment</h3>
           <div class="hc-form">
             <div class="hf-group">
               <label for="bkSvcNew">Service</label>
@@ -682,9 +682,9 @@ ${galleryHtml}
             </div>
             <div class="hf-consent">
               <input type="checkbox" id="bkSmsConsent">
-              <p>I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy" target="_blank">Privacy Policy</a>.</p>
+              <label for="bkSmsConsent">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms?b=${slug}" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy?b=${slug}" target="_blank">Privacy Policy</a>.</label>
             </div>
-            <button class="hf-submit" id="bkNewBtn" type="button">Request Appointment</button>
+            <button class="hf-submit" id="bkNewBtn" type="button">Book an Appointment</button>
             <div class="hf-msg" id="bkNewMsg"></div>
           </div>
         </div>
@@ -743,7 +743,7 @@ ${galleryHtml}
           <li><a href="#about">About</a></li>
           <li><a href="#book">Book Appointment</a></li>
           ${phone ? `<li><a href="tel:${phoneBare}">Call Now</a></li>` : ''}
-          ${instagram ? `<li><a href="${escHtml(instagram)}" target="_blank" rel="noopener">Instagram</a></li>` : ''}
+          ${instagram ? `<li><a href="${escHtml(instagram)}" target="_blank" rel="noopener">See us on Instagram</a></li>` : ''}
         </ul>
       </div>
     </div>
@@ -921,7 +921,7 @@ ${galleryHtml}
     })
     .then(function(r){ return r.json() })
     .then(function(d){
-      newBtn.disabled=false; newBtn.textContent='Request Appointment'
+      newBtn.disabled=false; newBtn.textContent='Book an Appointment'
       if (d.success || d.booking_id) {
         document.getElementById('bkSuccessMsg').textContent = "Request received! We'll confirm your " + date + " appointment shortly."
         show('scrSuccess')
@@ -929,7 +929,7 @@ ${galleryHtml}
         msg('bkNewMsg', d.error || 'Something went wrong. Please try again.', true)
       }
     })
-    .catch(function(){ newBtn.disabled=false; newBtn.textContent='Request Appointment'; msg('bkNewMsg','Network error. Please try again.',true) })
+    .catch(function(){ newBtn.disabled=false; newBtn.textContent='Book an Appointment'; msg('bkNewMsg','Network error. Please try again.',true) })
   })
 
   // --- Chat widget ---

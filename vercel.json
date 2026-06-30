@@ -1,6 +1,10 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/terms",              "destination": "/api/terms" },
+    { "source": "/terms/:rest*",       "destination": "/api/terms" },
+    { "source": "/privacy",            "destination": "/api/privacy" },
+    { "source": "/privacy/:rest*",     "destination": "/api/privacy" },
     { "source": "/book/:slug",         "destination": "/api/book-widget?slug=:slug" },
     { "source": "/:slug([a-z0-9][a-z0-9]*-[a-z0-9-]+)", "destination": "/api/b/:slug" }
   ],
