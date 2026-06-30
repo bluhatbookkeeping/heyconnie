@@ -815,7 +815,7 @@ ${galleryHtml}
   var phoneInput = document.getElementById('bkPhone')
   if (phoneInput) {
     phoneInput.addEventListener('input', function(e){
-      var digits = e.target.value.replace(/\D/g,'').slice(0,10)
+      var digits = e.target.value.replace(/[^0-9]/g,'').slice(0,10)
       var f = ''
       if (digits.length > 0) f = '(' + digits.slice(0,3)
       if (digits.length >= 4) f += ') ' + digits.slice(3,6)
@@ -833,7 +833,7 @@ ${galleryHtml}
   // Phone lookup
   var phoneBtn = document.getElementById('bkPhoneBtn')
   if (phoneBtn) phoneBtn.addEventListener('click', function(){
-    var raw = document.getElementById('bkPhone').value.replace(/\D/g,'')
+    var raw = document.getElementById('bkPhone').value.replace(/[^0-9]/g,'')
     if (raw.length < 10) { msg('bkPhoneMsg','Please enter a valid phone number.',true); return }
     phoneVal = raw
     if (document.getElementById('bkSmsConsentPhone').checked) smsConsentAt = new Date().toISOString()
