@@ -5,6 +5,46 @@ _Older sessions in [PROGRESS_ARCHIVE.md](PROGRESS_ARCHIVE.md)._
 
 ---
 
+## Session 88 — 2026-06-30
+
+### CURRENT STATUS: Booking form ported — syntax bugs being chased, not yet verified working
+### LAST COMPLETED: 4 syntax fixes pushed; Node.js render syntax check passes; awaiting browser confirm
+### NEXT: Verify phone entry works in browser, then test full flow (Andrew's number → pathA → vehicle grid → calendar → submit)
+
+---
+
+### What Was Done (Session 88)
+
+**File changed: `templates/bold-dark.js` only**
+
+Four edits made in one session:
+1. **Edit 1 (CSS)** — Added ~85 lines of new CSS before `/* Responsive */`: `.book-svc-card`, `.book-svc-grid`, `.summary-card`, `.summary-row`, `.cal-wrap`, `.cal-grid`, `.cal-day`, `.slot-grid`, `.slot-btn`, `.step-progress`, `.step-panel`, `.step-title`, `.step-nav`, `.pill-grid`, `.pill-btn`, `.collapse-link`, `.sms-consent-wrap`, `.form-success`, `.field-error`, `.fg`, `.form-grid`, `.phone-confirmed`
+2. **Edit 2 (render vars)** — Added `SVC_SHORT_DESC`, `svcBookCardsA`, `svcBookCardsB` computed from `svcs` array at render time (multi-tenant; no hardcoded service names). Removed unused `svcOptions`.
+3. **Edit 3 (HTML)** — Replaced full `<!-- BOOKING FORM -->` section: old `scrPhone/scrReturning/scrNew` structure replaced with `phoneEntry` → `pathA` (vehicle picker grid `#aVehicleGrid`, service cards, summary card with 5 inline-edit rows, calendar `#aCalWrap`, slot picker `#aSlotWrap`, promo + notes collapse, reward banner, SMS consent `#smsConsentA`) → `pathB` (3-step: B1 service+condition pills+notes, B2 contact+calendar+slots, B3 vehicle+promo+SMS consent `#smsConsentB`) → `#formSuccess` success screen
+4. **Edit 4 (JS)** — Replaced full booking form JS inside IIFE: CAR_DATA ported verbatim, `submitPhone`, `routeToPathA`, `renderVehicleGrid`, `deleteVehicle`, `populateAEditModel`, `selectSvcA/B`, `togglePathAEdit`, formA submit, `routeToPathB`, `showStepB`, `validateStepB`, `nextStepB/prevStepB`, bookingForm submit, `submitBooking`, `addAnotherVehicle`, `resetBookingForm`, calendar system (`renderCal`, `calNav`, `calPickDay`), slot picker (`renderSlots`, `fetchSlotsA/B`), condition pills, collapse toggle, promo apply, Google Places autocomplete. All API calls: `API_BASE + '/api/...' + SLUG`. All payloads: `business_id: SLUG`. `_smsConsentAt` tracked from phone screen through both paths.
+
+**API confirmed working (lookup-customer returns correct data for Andrew's number)**
+
+**Syntax bugs hit (all in Node.js template literal — backslash consumed at render time):**
+- `\+` in `/^\+1/` → `/^+1/` (invalid regex, kills IIFE) — fixed: `.slice(-10)`
+- `\s` in `/\s+/g` → `/s+/g` (wrong but not fatal) — fixed: `/ /g`
+- `\'` in `we\'ll` inside single-quoted string → `we'll` breaks string — fixed: rephrased to avoid apostrophe
+- `\'` in `calPickDay(\'' + prefix...)` → `''` breaks string — fixed: `\\'` produces `\'` in output
+- `\'` in `querySelector('[onclick="toggleCollapse(\'aPromoWrap\'...']')` — fixed: added `id="aPromoToggleBtn"` to button, switched to `getElementById`
+- `\"` in double-quoted string with style attributes → `"` breaks string — fixed: switched back to single-quoted outer string
+
+**Commits pushed:** b3dd428, 0037458, 59d9d08, f6f9c63
+
+**Node.js render + `new Function()` syntax check: ALL CLEAN (confirmed before last push)**
+
+**Not yet verified:** browser flow end-to-end. Last browser check still showed "Unexpected identifier 'font'" — fix pushed but not confirmed in browser yet.
+
+**Decision:** After browser confirms no more syntax errors, verify full flow per spec: phone → pathA → vehicle grid → service auto-select → inline edit → calendar → slots → submit → success screen. Then pathB (new customer 3-step).
+
+**Known issue to watch:** The `_smsConsentAt` variable resets on `resetBookingForm()` but not on `editEntryPhone()` — by design (phone edit doesn't revoke consent captured at phone entry).
+
+---
+
 ## Session 87 — 2026-06-30
 
 ### CURRENT PHASE: Phase 5 — Booking form full port from luis-mobile-detailing.vercel.app
