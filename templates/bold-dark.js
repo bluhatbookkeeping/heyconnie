@@ -590,7 +590,7 @@ ${galleryHtml}
           <div class="hc-form">
             <div class="hf-group">
               <label for="bkPhone" style="text-align:center">Phone Number</label>
-              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" autocomplete="tel" style="text-align:center">
+              <input type="tel" id="bkPhone" placeholder="(626) 555-1234" inputmode="numeric" maxlength="10" autocomplete="tel" style="text-align:center">
             </div>
             <button class="hf-submit" id="bkPhoneBtn" type="button">Get Started</button>
             <div class="hf-msg" id="bkPhoneMsg"></div>
@@ -811,19 +811,12 @@ ${galleryHtml}
   function show(id){ ['scrPhone','scrReturning','scrNew','scrSuccess'].forEach(function(s){ document.getElementById(s).style.display = s===id?'':'none' }) }
   function msg(id, text, isErr){ var el=document.getElementById(id); el.textContent=text; el.className='hf-msg '+(isErr?'hf-error':'hf-success') }
 
-  // Phone input — format to (XXX) XXX-XXXX, digits only
+  // Phone input — digits only, max 10
   var phoneInput = document.getElementById('bkPhone')
-  if (phoneInput) {
-    phoneInput.setAttribute('maxlength', '14')
-    phoneInput.addEventListener('input', function(){
-      var digits = this.value.replace(/\D/g,'').slice(0,10)
-      var fmt = ''
-      if (digits.length > 0) fmt = '(' + digits.slice(0,3)
-      if (digits.length >= 4) fmt += ') ' + digits.slice(3,6)
-      if (digits.length >= 7) fmt += '-' + digits.slice(6,10)
-      if (this.value !== fmt) this.value = fmt
-    })
-  }
+  if (phoneInput) phoneInput.addEventListener('input', function(){
+    var digits = this.value.replace(/\D/g,'').slice(0,10)
+    if (this.value !== digits) this.value = digits
+  })
 
   // Phone lookup
   var phoneBtn = document.getElementById('bkPhoneBtn')
