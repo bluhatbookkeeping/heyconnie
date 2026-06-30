@@ -258,7 +258,7 @@ function renderBoldDark({ business, services }) {
     .hc-form .hf-chip-wrap input[type=radio]:checked + .hf-chip{border-color:var(--blue);background:var(--blue-light);color:var(--blue);font-weight:600}
     .hc-form .hf-consent{display:flex;align-items:flex-start;gap:10px;margin:8px 0 4px}
     .hc-form .hf-consent input[type=checkbox]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--blue);cursor:pointer}
-    .hc-form .hf-consent p{font-size:.78rem;color:var(--muted);line-height:1.5}
+    .hc-form .hf-consent label{font-size:.78rem;color:var(--muted);line-height:1.5;font-weight:400;cursor:pointer}
     .hc-form .hf-consent a{color:var(--blue);text-decoration:underline}
     .hc-form .hf-submit{width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:700;cursor:pointer;margin-top:20px;transition:all .2s;font-family:var(--body)}
     .hc-form .hf-submit:hover{background:var(--blue-dark);transform:translateY(-1px);box-shadow:var(--shadow-md)}
@@ -595,7 +595,7 @@ ${galleryHtml}
             <div class="hf-msg" id="bkPhoneMsg"></div>
             <div class="hf-consent" style="margin-top:14px;text-align:left">
               <input type="checkbox" id="bkSmsConsentPhone">
-              <label for="bkSmsConsentPhone">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms?b=${slug}" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy?b=${slug}" target="_blank">Privacy Policy</a>.</label>
+              <label for="bkSmsConsentPhone">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</label>
             </div>
             ${phone ? `<p style="margin-top:14px;font-size:13px;color:var(--muted);text-align:center">Or call us: <a href="tel:${phoneBare}" style="color:var(--blue);font-weight:600">${phoneNav}</a></p>` : ''}
           </div>
@@ -628,7 +628,7 @@ ${galleryHtml}
             </div>
             <div class="hf-consent">
               <input type="checkbox" id="bkSmsConsentReturn">
-              <label for="bkSmsConsentReturn">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms?b=${slug}" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy?b=${slug}" target="_blank">Privacy Policy</a>.</label>
+              <label for="bkSmsConsentReturn">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</label>
             </div>
             <button class="hf-submit" id="bkReturnBtn" type="button">Confirm Booking</button>
             <div class="hf-msg" id="bkReturnMsg"></div>
@@ -682,7 +682,7 @@ ${galleryHtml}
             </div>
             <div class="hf-consent">
               <input type="checkbox" id="bkSmsConsent">
-              <label for="bkSmsConsent">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="https://heyconnie.co/terms?b=${slug}" target="_blank">Terms</a> and <a href="https://heyconnie.co/privacy?b=${slug}" target="_blank">Privacy Policy</a>.</label>
+              <label for="bkSmsConsent">I agree to receive SMS text messages from Hey Connie about my appointment, booking confirmations, reminders, and scheduling updates. Message frequency varies. Message and data rates may apply. Reply HELP for help or STOP to cancel. Consent is not required to book. See <a href="/terms?b=${slug}">Terms</a> and <a href="/privacy?b=${slug}">Privacy Policy</a>.</label>
             </div>
             <button class="hf-submit" id="bkNewBtn" type="button">Book an Appointment</button>
             <div class="hf-msg" id="bkNewMsg"></div>
@@ -803,6 +803,17 @@ ${galleryHtml}
 
   function show(id){ ['scrPhone','scrReturning','scrNew','scrSuccess'].forEach(function(s){ document.getElementById(s).style.display = s===id?'':'none' }) }
   function msg(id, text, isErr){ var el=document.getElementById(id); el.textContent=text; el.className='hf-msg '+(isErr?'hf-error':'hf-success') }
+
+  // Phone input — auto-format to (XXX) XXX-XXXX, cap at 10 digits
+  var phoneInput = document.getElementById('bkPhone')
+  if (phoneInput) phoneInput.addEventListener('input', function(){
+    var digits = this.value.replace(/\D/g,'').slice(0,10)
+    var fmt = ''
+    if (digits.length > 0) fmt = '(' + digits.slice(0,3)
+    if (digits.length >= 4) fmt += ') ' + digits.slice(3,6)
+    if (digits.length >= 7) fmt += '-' + digits.slice(6,10)
+    this.value = fmt
+  })
 
   // Phone lookup
   var phoneBtn = document.getElementById('bkPhoneBtn')
